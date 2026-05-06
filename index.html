@@ -96,14 +96,21 @@
               Your browser does not support embedded video.
             </video>
           </div>
-          <h3 id="video-x2-title">Mocap → MuJoCo → real robot (natural walk)</h3>
+          <h3 id="video-x2-title">
+            End-to-end deployment pipeline: retarget → MuJoCo → real X2
+          </h3>
           <p id="video-x2-caption">
-            One canonical natural-walk motion shown end-to-end: the retargeted
-            reference motion on the <strong>left</strong>, the same checkpoint
-            replayed in MuJoCo in the <strong>middle</strong>, and the
-            checkpoint deployed on the AgiBot X2 Ultra hardware on the
-            <strong>right</strong>. Same motion, three runtimes — what
-            "sim-to-sim-to-real" looks like in one frame.
+            The full deployment pipeline on a single canonical natural-walk
+            motion. <strong>Left</strong>: the retargeted reference motion
+            (mocap retargeted onto the X2 morphology) — the upstream input
+            to training. <strong>Middle</strong>: the trained whole-body
+            controller checkpoint replayed in MuJoCo. <strong>Right</strong>:
+            the <em>same</em> checkpoint deployed on the AgiBot X2 Ultra
+            hardware. Reference, simulator, real — three stages of one
+            pipeline on the same motion. (This is not a sim-to-sim-to-real
+            comparison; for the IsaacLab → MuJoCo and MuJoCo → real
+            transfers themselves, see the abstract and the anchor archive
+            below.)
           </p>
         </section>
         <!-- § Abstract -->
@@ -425,7 +432,6 @@
   author       = {Claude Opus and Sitarama Raju Chekuri and
                   Zeeshaan Mohammed and Dhruv Diddi and Samarth Shukla},
   year         = {2026},
-  note         = {Project page and PDF},
   howpublished = {\url{https://sonic-agibot-x2.github.io/}},
 }</code><button
             class="copy-btn"
