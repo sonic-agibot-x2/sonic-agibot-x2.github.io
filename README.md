@@ -84,8 +84,8 @@ with a distinct `<h3>`, caption, and anchor:
 | `x2-normal-walk-mocap-sim-real.mp4`             | `#video-x2`         | Three-panel natural walk: retargeted mocap (left) → MuJoCo checkpoint (mid) → real X2 hardware (right). 22 MB.                                |
 | `x2-ablation-tests-run1-vs-run2.mp4`            | `#video-ablation`   | 2×3 grid: top row = run 1 (2k/6k/16k checkpoints, all collapse <6 s); bottom row = run 2 with foot-collision URDF fix (all complete). 9.2 MB. |
 | `x2-compare-real-sim-motions-with-plots.mp4`    | `#video-sim2real`   | Left: real (solid) and sim (shaded) walking side-by-side in MuJoCo. Right: lower-body joint trajectories overlaid. 14 MB.                     |
-| `x2-sonic-balancing-on-one-leg.mp4`             | `#video-balance`    | Bonus (More demos): single-leg static balance under the deployed controller — out-of-distribution stance test. 18 MB.                         |
-| `x2-sonic-manipulation-gestures.mp4`            | `#video-manip`      | Bonus (More demos): coordinated upper-body and 14-DoF dexterous-hand gestures while the lower body holds stance. 58 MB.                       |
+| `x2-sonic-balancing-on-one-leg.mp4`             | `#video-balance`    | Bonus (More demos): single-leg static balance under the deployed controller — out-of-distribution stance test. Portrait clip, 1.8 MB.         |
+| `x2-sonic-manipulation-gestures.mp4`            | `#video-manip`      | Bonus (More demos): coordinated upper-body and 14-DoF dexterous-hand gestures while the lower body holds stance. Portrait clip, 4.8 MB.       |
 
 Pages-relevant attributes used on every `<video>`:
 
@@ -114,12 +114,11 @@ ffmpeg -i input.mp4 -vf "scale=-2:720" \
        output-720p.mp4
 ```
 
-The current set is ~120 MB total. Per-file: the four locomotion / balance
-clips are all under the 50 MB GitHub-recommended ceiling, but
-`x2-sonic-manipulation-gestures.mp4` (~58 MB) is **above** it and will
-trigger a non-blocking warning on push. Re-encode that one with the
-command above (or move it to Git LFS on the Pages repo) if the warning
-becomes a problem.
+The current set is ~52 MB total, all per-file well under the 50 MB
+GitHub-recommended ceiling. The two More-demos clips were originally
+HEVC Main 10 (10-bit yuv420p10le) phone captures that browsers cannot
+decode in `<video>`; they have been re-encoded to H.264 8-bit yuv420p
+at 720p with `-an -movflags +faststart` for browser playback.
 
 ## Deploying to sonic-agibot-x2.github.io
 
@@ -174,12 +173,39 @@ In the **sonic-agibot-x2.github.io** repo: **Settings → Pages →** source
 **Deploy from a branch**, branch **`main`**, folder **`/ (root)`**.  
 Live site: **https://sonic-agibot-x2.github.io/** (may take a minute after push).
 
+### Browser codec gotcha (HEVC / 10-bit)
+
+If a clip plays in your local video player but renders as a **black
+frame inside a working `<video>` element** (controls move, duration is
+known, no pixels), the file is almost certainly HEVC / H.265 (often
+Main 10 / 10-bit). Browsers do not decode that in `<video>`. Confirm
+with `ffprobe`:
+
+```bash
+ffprobe -v error -select_streams v:0 \
+  -show_entries stream=codec_name,profile,pix_fmt \
+  -of default=nw=1 path/to/clip.mp4
+```
+
+If you see `codec_name=hevc` or `pix_fmt=yuv420p10le`, re-encode to
+H.264 8-bit:
+
+```bash
+ffmpeg -i input.mp4 -vf "scale=-2:720" \
+       -c:v libx264 -preset slow -crf 23 -pix_fmt yuv420p \
+       -an -movflags +faststart \
+       output.mp4
+```
+
+`yuv420p` (8-bit) and `libx264 High`/`Main` profile are the
+universally browser-safe combo.
+
 ### Large video file
 
-`static/videos/x2-sonic-manipulation-gestures.mp4` is ~58 MB; GitHub
-warns above 50 MB but accepts the push. To silence the warning,
-re-encode it (see [Optional: re-encode to shrink size](#optional-re-encode-to-shrink-size))
-or move large MP4s to Git LFS on the Pages repo only.
+All current clips are under the 50 MB GitHub-recommended ceiling. If
+a future clip exceeds it, re-encode (see
+[Optional: re-encode to shrink size](#optional-re-encode-to-shrink-size))
+or move large MP4s to Git LFS on the Pages repo.
 
 ## Local preview
 
@@ -195,5 +221,3 @@ python3 -m http.server 8000
   preferred over deploy-from-branch.
 - Update the BibTeX `@misc{...}` once the paper has an arXiv ID.
 - Confirm legal clearance on any hardware footage before public push.
-- Consider re-encoding `x2-sonic-manipulation-gestures.mp4` to drop it
-  below the 50 MB GitHub warning threshold.

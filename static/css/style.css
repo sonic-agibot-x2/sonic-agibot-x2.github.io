@@ -481,6 +481,14 @@ section.block > ul {
   margin: 0;
 }
 
+/* The two More-demos clips are portrait phone footage. Show them
+   inside the 16:9 frame with neutral side bars instead of cropping
+   the head/feet. Background is dark so the bars look intentional. */
+.video-block--grid .video-frame video {
+  object-fit: contain;
+  background: #0e0e10;
+}
+
 .block-intro {
   margin: 0 0 1rem;
   color: var(--muted);
