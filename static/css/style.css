@@ -1,0 +1,583 @@
+/*
+ * Sonic-on-AgiBot-X2 project page
+ * DreamDojo-inspired layout (numbered sections + colored heading underlines)
+ * Light theme, indigo accent, navy->violet gradient on section underlines + pills
+ */
+
+:root {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --text: #1a1a1a;
+  --muted: #5c5c5c;
+  --border: #e8e8e8;
+  --border-strong: #d4d4d4;
+
+  /* Accent (Option A: Indigo) */
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-soft: #eef2ff;
+
+  /* Navy -> Violet gradient (Option C, used on section underlines + primary pills) */
+  --grad-from: #1e3a8a;
+  --grad-to: #7c3aed;
+  --accent-gradient: linear-gradient(90deg, var(--grad-from), var(--grad-to));
+
+  --radius-pill: 999px;
+  --radius-card: 12px;
+  --max-read: 52rem;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo,
+    "JetBrains Mono", monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
+
+.wrap {
+  max-width: calc(var(--max-read) + 3rem);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.wrap--wide {
+  max-width: calc(var(--max-read) + 8rem);
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  padding: 3.25rem 0 2rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+}
+
+.hero-title {
+  margin: 0 auto 0.55rem;
+  max-width: 26ch;
+  font-size: clamp(2.15rem, 4.2vw, 2.95rem);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.12;
+  color: #111827;
+  text-wrap: balance;
+  text-rendering: optimizeLegibility;
+}
+
+.hero-subtitle {
+  margin: 0 auto 1.5rem;
+  max-width: 48ch;
+  font-size: clamp(1.12rem, 2.15vw, 1.52rem);
+  font-weight: 600;
+  letter-spacing: -0.014em;
+  line-height: 1.34;
+  color: #1f2937;
+  text-wrap: balance;
+}
+
+.authors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 0.5rem;
+  margin: 0 auto 0;
+  max-width: 48rem;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.authors .sep {
+  color: var(--muted);
+  user-select: none;
+}
+
+/* ---------- Pill row ---------- */
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem 0.6rem;
+  margin: 1.5rem 0 0;
+  list-style: none;
+  padding: 0;
+}
+
+.pill-row li + li::before {
+  content: "•";
+  color: var(--muted);
+  margin-right: 0.6rem;
+  font-size: 0.85rem;
+  align-self: center;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1.05rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: filter 0.15s, box-shadow 0.15s, transform 0.05s,
+    background 0.15s;
+}
+
+.pill:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.22);
+}
+
+.pill:active {
+  transform: translateY(1px);
+}
+
+/* Solid pill: indigo fill, white text — used for non-primary pills */
+.pill--solid {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.pill--solid:hover {
+  color: #ffffff;
+  background: var(--accent-hover);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.32);
+}
+
+/* Primary pill: gradient fill (matches section underlines) */
+.pill--primary {
+  background: var(--accent-gradient);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.pill--primary:hover {
+  color: #ffffff;
+  filter: brightness(1.07);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+}
+
+/* ---------- Main layout ---------- */
+
+main .wrap {
+  padding-top: 1.75rem;
+  padding-bottom: 3rem;
+}
+
+.lead {
+  margin: 1.5rem auto 1.75rem;
+  max-width: var(--max-read);
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+/* Tighten the gap between hero video and lead/abstract */
+.video-block--hero + .lead,
+.video-block--hero + section.block {
+  margin-top: 1.25rem;
+}
+
+.video-block--hero {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ---------- Numbered sections (DreamDojo-style) ---------- */
+
+section.block {
+  margin: 2.5rem auto;
+  max-width: var(--max-read);
+}
+
+section.block h2 {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  margin: 0 0 1rem;
+  padding-bottom: 0.4rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #111;
+  position: relative;
+}
+
+/* The signature DreamDojo-style colored underline,
+   recolored with our navy -> violet gradient. */
+section.block h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--accent-gradient);
+}
+
+section.block h2 .num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.55rem;
+  border-radius: 6px;
+  background: var(--accent-gradient);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+section.block > p,
+section.block > figure,
+section.block > ol,
+section.block > ul {
+  margin-top: 0.85rem;
+}
+
+/* ---------- Abstract ---------- */
+
+.abstract p {
+  margin: 0 0 0.85rem;
+  color: #2a2a2a;
+}
+
+.abstract em {
+  font-style: italic;
+}
+
+/* ---------- Numbered takeaways ---------- */
+
+.takeaways {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: item;
+}
+
+.takeaways > li {
+  counter-increment: item;
+  position: relative;
+  padding: 1rem 1.1rem 1rem 3.4rem;
+  margin-bottom: 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.takeaways > li::before {
+  content: counter(item);
+  position: absolute;
+  left: 0.9rem;
+  top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 6px;
+  background: var(--accent-gradient);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.takeaways h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.takeaways p {
+  margin: 0;
+  color: #2a2a2a;
+}
+
+/* Bullet variant: replaces the number badge with a small gradient dot. */
+.takeaways--bullets > li {
+  padding: 1rem 1.1rem 1rem 2.4rem;
+}
+
+.takeaways--bullets > li::before {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  top: 1.55rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  min-width: 0;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  color: transparent;
+  font-size: 0;
+  font-weight: 0;
+}
+
+/* Single-content card — used in sections that have only one item
+   (e.g. anchor archive, taxonomy) so we don't double-number the badge. */
+.content-card {
+  padding: 1.1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.content-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.content-card p {
+  margin: 0;
+  color: #2a2a2a;
+}
+
+/* ---------- Figure ---------- */
+
+.figure-card {
+  margin: 0 auto;
+  max-width: var(--max-read);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.figure-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.figure-card figcaption {
+  padding: 0.85rem 1rem;
+  font-size: 0.92rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+/* ---------- Video blocks (interleaved) ---------- */
+
+.video-block {
+  margin: 2.5rem auto;
+  max-width: var(--max-read);
+}
+
+.video-block--hero {
+  max-width: calc(var(--max-read) + 6rem);
+}
+
+.video-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0e0e10;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04),
+    0 8px 28px rgba(15, 15, 35, 0.08);
+}
+
+.video-frame video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.video-block h3 {
+  margin: 0.85rem 0 0.25rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.video-block p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- Citation block ---------- */
+
+.cite-box {
+  position: relative;
+  max-width: var(--max-read);
+  margin: 0;
+  padding: 1.1rem 1.1rem 3rem;
+  background: #0f0f17;
+  color: #e8e8ee;
+  border-radius: var(--radius-card);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.cite-box code {
+  display: block;
+  white-space: pre;
+}
+
+.copy-btn {
+  position: absolute;
+  bottom: 0.7rem;
+  right: 0.7rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent-gradient);
+  color: #ffffff;
+  cursor: pointer;
+  transition: filter 0.12s, box-shadow 0.12s;
+}
+
+.copy-btn:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+}
+
+.copy-btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.copy-btn[data-copied="true"] {
+  background: #16a34a;
+}
+
+/* ---------- Footer ---------- */
+
+footer.site {
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+footer.site a {
+  color: var(--accent);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 2.25rem 0 1.5rem;
+  }
+
+  .hero-title {
+    font-size: clamp(1.75rem, 6.5vw, 2.35rem);
+    letter-spacing: -0.025em;
+    max-width: 22ch;
+  }
+
+  .hero-subtitle {
+    font-size: 1.05rem;
+    max-width: 30ch;
+    font-weight: 600;
+  }
+
+  .takeaways--bullets > li {
+    padding-left: 2rem;
+    padding-top: 1rem;
+  }
+
+  .takeaways--bullets > li::before {
+    top: 1.55rem;
+    left: 0.85rem;
+  }
+
+  .pill-row li + li::before {
+    display: none;
+  }
+
+  section.block h2 {
+    font-size: 1.2rem;
+  }
+
+  .takeaways > li {
+    padding-left: 1rem;
+    padding-top: 2.85rem;
+  }
+
+  .takeaways > li::before {
+    top: 0.9rem;
+    left: 1rem;
+  }
+
+  .video-block--hero {
+    max-width: var(--max-read);
+  }
+}

@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sonic AgiBot X2 Port</title>
+    <meta
+      name="description"
+      content="Sonic AgiBot X2 Port: a sim-to-sim-to-real bridge for a non-G1 humanoid. Project page, paper PDF, demo videos, and citation."
+    />
+    <meta
+      property="og:title"
+      content="Sonic AgiBot X2 Port — A Sim-to-Sim-to-Real Bridge for a Non-G1 Humanoid"
+    />
+    <meta
+      property="og:description"
+      content="First publicly documented Sonic-family policy on a non-G1 humanoid (AgiBot X2 Ultra)."
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:image" content="static/images/f1_pipeline.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="static/css/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="hero">
+      <div class="wrap wrap--wide">
+        <h1 class="hero-title">
+          Sonic AgiBot X2 Port
+        </h1>
+        <p class="hero-subtitle">
+          A Sim-to-Sim-to-Real Bridge for a Non-G1&nbsp;Humanoid
+        </p>
+
+        <div class="authors" aria-label="Authors">
+          <span>Claude Opus</span><span class="sep">·</span>
+          <span>Sitarama Raju Chekuri</span><span class="sep">·</span>
+          <span>Zeeshaan Mohammed</span><span class="sep">·</span>
+          <span>Dhruv Diddi</span><span class="sep">·</span>
+          <span>Samarth Shukla</span>
+        </div>
+
+        <ul class="pill-row" aria-label="Resources">
+          <li>
+            <a
+              class="pill pill--primary"
+              href="static/pdfs/cursor_paper.pdf"
+              target="_blank"
+              rel="noopener"
+              >Paper (PDF)</a
+            >
+          </li>
+          <li>
+            <a
+              class="pill pill--solid"
+              href="https://github.com/meetsitaram/GR00T-WholeBodyControl"
+              target="_blank"
+              rel="noopener"
+              >Code</a
+            >
+          </li>
+          <li><a class="pill pill--solid" href="#video-x2">Videos</a></li>
+          <li><a class="pill pill--solid" href="#citation">Citation</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <main id="main">
+      <div class="wrap wrap--wide">
+        <!-- Video 1 — full-width hero placeholder -->
+        <section
+          class="video-block video-block--hero"
+          id="video-x2"
+          aria-labelledby="video-x2-title"
+        >
+          <div class="video-frame">
+            <video
+              controls
+              playsinline
+              muted
+              loop
+              preload="metadata"
+              aria-describedby="video-x2-caption"
+            >
+              <source
+                src="static/videos/abigot-demo-video.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support embedded video.
+            </video>
+          </div>
+          <h3 id="video-x2-title">Real robot deployment</h3>
+          <p id="video-x2-caption">
+            AgiBot X2 Ultra running the deployed Sonic-family whole-body policy
+            on hardware. (Placeholder clip; per-section real footage will
+            replace this.)
+          </p>
+        </section>
+        <!-- § Abstract -->
+        <section class="block abstract" aria-labelledby="abstract-title">
+          <h2 id="abstract-title">
+            <span class="num">1</span>Abstract
+          </h2>
+          <p>
+            We deploy a learned whole-body controller on the AgiBot&nbsp;X2
+            Ultra (31&nbsp;DoF, 14-DoF dexterous hands) — to our knowledge the
+            first publicly documented Sonic-family policy on a non-G1
+            humanoid. Reaching the real robot from upstream Sonic required
+            closing two sequential transfers: a <em>sim-to-sim</em> transfer
+            from the training simulator (IsaacLab) to the deployment
+            evaluation simulator (MuJoCo), and a <em>sim-to-real</em> transfer
+            from MuJoCo to hardware through a closed-API vendor motion
+            controller.
+          </p>
+          <p>
+            Adapting upstream Sonic surfaced gaps at every layer. Motion
+            retargeting introduced <strong>arm-flip</strong> and
+            <strong>wrist-clamp</strong> failures rooted in inverse-kinematics
+            assumptions specific to the original platform. The sim-to-sim
+            transfer was blocked by three independent observation- and
+            encoding-layer bugs that masqueraded as physics-tuning problems:
+            a <strong>foot-collision URDF mismatch</strong> in the training
+            distribution; a
+            <strong>6D-rotation channel-order error</strong> that survived
+            months of tolerance-based parity checking because permutations
+            preserve aggregate norms; and a
+            <strong>tokenizer-layout error</strong> at the
+            runtime-to-export adapter boundary.
+          </p>
+          <p>
+            The sim-to-real handoff produced roughly 1.6&nbsp;s of
+            <strong>dual-publisher whir</strong> because the vendor controller
+            exposed only coarse start/stop primitives and no graceful-overlap
+            command; a persistent-client mode escalator with controller-reported
+            mode as ground truth reduced measured dwell in the intermediate
+            joint-default state to 0.20&nbsp;s, and we compose a finite-state
+            protocol around the same primitives so the operator hears a single
+            continuous handoff. We close with a four-class failure-mode
+            taxonomy — bug, physics-divergence, handoff, and tuning —
+            intended as an organising principle for subsequent humanoid
+            deployments.
+          </p>
+        </section>
+
+        <!-- § Pipeline figure -->
+        <section class="block" aria-labelledby="figure-title">
+          <h2 id="figure-title">
+            <span class="num">2</span>Pipeline
+          </h2>
+          <figure class="figure-card">
+            <img
+              src="static/images/f1_pipeline_web.svg"
+              alt="Pipeline figure: upstream Sonic training in IsaacLab, transfer to MuJoCo deployment-evaluation simulator, and final transfer to the AgiBot X2 Ultra hardware via the vendor motion controller. Bottom row shows the sim-to-real anchor archive validation substrate."
+              loading="lazy"
+            />
+            <figcaption>
+              End-to-end Sonic → AgiBot X2 Ultra deployment pipeline:
+              IsaacLab training, MuJoCo deployment-evaluation bridge, and
+              vendor-controller handoff to hardware.
+            </figcaption>
+          </figure>
+        </section>
+
+        <!-- § Key Takeaways (1–3) -->
+        <section class="block" aria-labelledby="takeaways1-title">
+          <h2 id="takeaways1-title">
+            <span class="num">3</span>Key Takeaways
+          </h2>
+          <ul class="takeaways takeaways--bullets">
+            <li>
+              <h3>Two sequential transfers, not one</h3>
+              <p>
+                We treat IsaacLab → MuJoCo as a first-class
+                <em>sim-to-sim</em> bridge, then MuJoCo → hardware as
+                <em>sim-to-real</em>. Each layer gets its own validation
+                substrate; this separation is what made debugging tractable.
+              </p>
+            </li>
+            <li>
+              <h3>Three observation/encoding bugs masqueraded as physics</h3>
+              <p>
+                A foot-collision URDF mismatch, a 6D-rotation channel-order
+                error (norms hide permutations), and a tokenizer-layout error
+                at the export-adapter boundary. Each was confirmed by a
+                controlled fine-tune validation rather than tolerance-based
+                parity alone.
+              </p>
+            </li>
+            <li>
+              <h3>Dual-publisher whir: 1.6&nbsp;s → 0.20&nbsp;s</h3>
+              <p>
+                A persistent-client mode escalator using
+                controller-reported mode as ground truth, wrapped in a
+                finite-state protocol around the vendor's coarse start/stop
+                primitives, collapses the audible handoff into a single
+                continuous transition.
+              </p>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Video 2 — motion retargeting -->
+        <section
+          class="video-block"
+          id="video-retargeting"
+          aria-labelledby="video-retargeting-title"
+        >
+          <div class="video-frame">
+            <video
+              controls
+              playsinline
+              muted
+              loop
+              preload="metadata"
+              aria-describedby="video-retargeting-caption"
+            >
+              <source
+                src="static/videos/abigot-demo-video.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support embedded video.
+            </video>
+          </div>
+          <h3 id="video-retargeting-title">Motion retargeting</h3>
+          <p id="video-retargeting-caption">
+            Motion retargeting onto the X2 kinematics, illustrating the
+            arm-flip and wrist-clamp class of fixes. (Placeholder clip; real
+            retargeting visualization will replace this.)
+          </p>
+        </section>
+
+        <!-- § Sim-to-real anchor archive (Takeaway #4 — paired with Video 3) -->
+        <section class="block" aria-labelledby="anchor-title">
+          <h2 id="anchor-title">
+            <span class="num">4</span>Sim-to-Real Anchor Archive
+          </h2>
+          <div class="content-card">
+            <h3>What three matched recordings can — and cannot — prove</h3>
+            <p>
+              A committed archive of three matched simulator–hardware
+              recordings from a single canonical checkpoint validates the
+              URDF/MJCF kinematic chain and torso inertial model to within
+              roughly <strong>5°</strong> per-DoF RMS and base IMU angular
+              velocity to within roughly <strong>5%</strong>. We explicitly
+              scope the archive's <em>non-coverage</em>: foot contact,
+              friction, free-base dynamics, actuator saturation, and sensor
+              noise are <em>not</em>, and cannot be, addressed by these
+              recordings — and we close with a set of policy-free bench
+              tests that would convert this indirect closed-loop evidence
+              into direct, component-level validation.
+            </p>
+          </div>
+        </section>
+
+        <!-- Video 3 — MuJoCo real vs sim side-by-side (paired with anchor archive) -->
+        <section
+          class="video-block"
+          id="video-sim2real"
+          aria-labelledby="video-sim2real-title"
+        >
+          <div class="video-frame">
+            <video
+              controls
+              playsinline
+              muted
+              loop
+              preload="metadata"
+              aria-describedby="video-sim2real-caption"
+            >
+              <source
+                src="static/videos/abigot-demo-video.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support embedded video.
+            </video>
+          </div>
+          <h3 id="video-sim2real-title">Real vs sim in MuJoCo</h3>
+          <p id="video-sim2real-caption">
+            Side-by-side replay in MuJoCo: matched real recording vs
+            simulated rollout from the same canonical checkpoint — the
+            visual evidence behind the anchor-archive section above.
+            (Placeholder clip; real side-by-side will replace this.)
+          </p>
+        </section>
+
+        <!-- § Failure-mode taxonomy (Takeaway #5 — closing) -->
+        <section class="block" aria-labelledby="taxonomy-title">
+          <h2 id="taxonomy-title">
+            <span class="num">5</span>Failure-Mode Taxonomy
+          </h2>
+          <div class="content-card">
+            <h3>Four classes for organising the next deployment</h3>
+            <p>
+              We close with a four-class failure-mode taxonomy —
+              <strong>bug</strong>, <strong>physics-divergence</strong>,
+              <strong>handoff</strong>, and <strong>tuning</strong> —
+              intended as an organising principle for subsequent humanoid
+              deployments. Each class implies a different debugging
+              substrate and a different evidence bar before a fix can be
+              considered complete.
+            </p>
+          </div>
+        </section>
+
+        <!-- § Citation -->
+        <section class="block" id="citation" aria-labelledby="citation-title">
+          <h2 id="citation-title">
+            <span class="num">6</span>Citation
+          </h2>
+          <p>If you find this work useful, please cite:</p>
+          <pre class="cite-box"><code id="bibtex">@misc{sonic2026agibotx2,
+  title        = {Porting {NVIDIA} Sonic to the {AgiBot} {X2} Ultra:
+                  A Sim-to-Sim-to-Real Bridge for a Non-{G1} Humanoid},
+  author       = {Claude Opus and Sitarama Raju Chekuri and
+                  Zeeshaan Mohammed and Dhruv Diddi and Samarth Shukla},
+  year         = {2026},
+  note         = {Project page and PDF},
+  howpublished = {\url{https://sonic-agibot-x2.github.io/}},
+}</code><button
+            class="copy-btn"
+            type="button"
+            id="copy-bibtex"
+            aria-label="Copy BibTeX citation to clipboard"
+          >Copy</button></pre>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site">
+      <p>
+        © 2026 sonic-agibot-x2 contributors ·
+        <a href="static/pdfs/cursor_paper.pdf">Paper (PDF)</a> ·
+        <a href="https://github.com/meetsitaram/GR00T-WholeBodyControl"
+          >Code</a
+        >
+      </p>
+    </footer>
+
+    <script>
+      // ---- Auto-play videos when scrolled into view (muted), pause when out ----
+      (function () {
+        var videos = document.querySelectorAll(".video-frame video");
+        if (!videos.length) return;
+
+        // If the user manually paused a video, respect that and don't
+        // re-autoplay it on subsequent scroll-into-view events.
+        videos.forEach(function (v) {
+          v.dataset.userPaused = "false";
+          v.addEventListener("pause", function () {
+            // pause() also fires when we programmatically pause on scroll-out;
+            // only treat it as a user pause if the video is currently visible.
+            if (v.dataset.inView === "true" && !v.ended) {
+              v.dataset.userPaused = "true";
+            }
+          });
+          v.addEventListener("play", function () {
+            v.dataset.userPaused = "false";
+          });
+        });
+
+        if (!("IntersectionObserver" in window)) return;
+
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              var v = entry.target;
+              if (entry.isIntersecting) {
+                v.dataset.inView = "true";
+                if (v.dataset.userPaused !== "true") {
+                  var p = v.play();
+                  if (p && typeof p.catch === "function") p.catch(function () {});
+                }
+              } else {
+                v.dataset.inView = "false";
+                if (!v.paused) v.pause();
+              }
+            });
+          },
+          { threshold: 0.5 }
+        );
+
+        videos.forEach(function (v) {
+          io.observe(v);
+        });
+      })();
+
+      // ---- BibTeX copy button ----
+      (function () {
+        var btn = document.getElementById("copy-bibtex");
+        var src = document.getElementById("bibtex");
+        if (!btn || !src) return;
+        btn.addEventListener("click", function () {
+          var text = src.textContent || "";
+          var done = function () {
+            btn.textContent = "Copied";
+            btn.dataset.copied = "true";
+            setTimeout(function () {
+              btn.textContent = "Copy";
+              delete btn.dataset.copied;
+            }, 1600);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(function () {
+              fallback(text);
+              done();
+            });
+          } else {
+            fallback(text);
+            done();
+          }
+          function fallback(t) {
+            var ta = document.createElement("textarea");
+            ta.value = t;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "absolute";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+              document.execCommand("copy");
+            } catch (e) {}
+            document.body.removeChild(ta);
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1100 540"
+     role="img"
+     aria-labelledby="pipeline-title pipeline-desc"
+     font-family="Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+
+  <title id="pipeline-title">Sonic to AgiBot X2 Ultra: deployment and validation pipeline</title>
+  <desc id="pipeline-desc">Top row: Mocap and retarget, Trainer in IsaacLab, Sim validation in MuJoCo, Hardware safety, Real X2 gantry. Bottom row: Sim recording, Comparator, Real recording.</desc>
+
+  <defs>
+    <linearGradient id="gradReal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="gradComp" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4b5563"/>
+    </marker>
+    <marker id="arrowDashed" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
+    </marker>
+
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- Diagram title -->
+  <text x="550" y="30" text-anchor="middle"
+        font-size="20" font-weight="700" fill="#111827"
+        letter-spacing="-0.02em">Sonic &#8594; AgiBot X2 Ultra: deployment + validation pipeline</text>
+
+  <!-- Top row node 1: Mocap + Retarget (blue) -->
+  <g filter="url(#cardShadow)">
+    <rect x="20" y="62" width="190" height="138" rx="10" fill="#3b82f6"/>
+    <text x="115" y="92" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">1. Mocap + Retarget</text>
+    <text x="115" y="120" text-anchor="middle" font-size="11" fill="#dbeafe">human motion &#8594;</text>
+    <text x="115" y="135" text-anchor="middle" font-size="11" fill="#dbeafe">SOMA retargeter (X2 fork)</text>
+    <text x="200" y="190" text-anchor="end" font-size="10" font-style="italic" fill="#dbeafe">&#167;3</text>
+  </g>
+
+  <!-- Top row node 2: Trainer IsaacLab (indigo) -->
+  <g filter="url(#cardShadow)">
+    <rect x="237" y="62" width="190" height="138" rx="10" fill="#6366f1"/>
+    <text x="332" y="92" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">2. Trainer (IsaacLab)</text>
+    <text x="332" y="120" text-anchor="middle" font-size="11" fill="#e0e7ff">reference-tracking RL</text>
+    <text x="417" y="190" text-anchor="end" font-size="10" font-style="italic" fill="#e0e7ff">&#167;4.2, &#167;7</text>
+  </g>
+
+  <!-- Top row node 3: Sim Validation MuJoCo (violet) -->
+  <g filter="url(#cardShadow)">
+    <rect x="454" y="62" width="190" height="138" rx="10" fill="#8b5cf6"/>
+    <text x="549" y="92" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">3. Sim Validation</text>
+    <text x="549" y="110" text-anchor="middle" font-size="12" font-weight="600" fill="#ede9fe">(MuJoCo)</text>
+    <text x="549" y="135" text-anchor="middle" font-size="11" fill="#ede9fe">cross-runtime parity +</text>
+    <text x="549" y="150" text-anchor="middle" font-size="11" fill="#ede9fe">multi-init benchmark</text>
+    <text x="634" y="190" text-anchor="end" font-size="10" font-style="italic" fill="#ede9fe">&#167;4.3&#8211;&#167;4.4, &#167;6.1</text>
+  </g>
+
+  <!-- Top row node 4: Hardware Safety (amber) -->
+  <g filter="url(#cardShadow)">
+    <rect x="671" y="62" width="190" height="138" rx="10" fill="#f59e0b"/>
+    <text x="766" y="92" text-anchor="middle" font-size="14" font-weight="700" fill="#1f1300">4. Hardware Safety</text>
+    <text x="766" y="120" text-anchor="middle" font-size="11" fill="#3b2502">preflight, escalator,</text>
+    <text x="766" y="135" text-anchor="middle" font-size="11" fill="#3b2502">tilt watchdog</text>
+    <text x="851" y="190" text-anchor="end" font-size="10" font-style="italic" fill="#3b2502">&#167;6.2</text>
+  </g>
+
+  <!-- Top row node 5: Real X2 Gantry (navy to violet gradient) -->
+  <g filter="url(#cardShadow)">
+    <rect x="888" y="62" width="190" height="138" rx="10" fill="url(#gradReal)"/>
+    <text x="983" y="92" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">5. Real X2 (Gantry)</text>
+    <text x="983" y="120" text-anchor="middle" font-size="11" fill="#e0e7ff">smooth-handoff protocol;</text>
+    <text x="983" y="135" text-anchor="middle" font-size="11" fill="#e0e7ff">0.20 s dwell</text>
+    <text x="1068" y="190" text-anchor="end" font-size="10" font-style="italic" fill="#e0e7ff">&#167;5.1&#8211;&#167;5.4</text>
+  </g>
+
+  <!-- Top row arrows: 1 to 2 to 3 to 4 to 5 -->
+  <line x1="212" y1="131" x2="234" y2="131" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="429" y1="131" x2="451" y2="131" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="646" y1="131" x2="668" y2="131" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="863" y1="131" x2="885" y2="131" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Vertical dashed arrows: 3 down to 6, 5 down to 8 -->
+  <line x1="549" y1="202" x2="549" y2="307" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,5" marker-end="url(#arrowDashed)"/>
+  <line x1="983" y1="202" x2="983" y2="307" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="5,5" marker-end="url(#arrowDashed)"/>
+
+  <!-- Bottom row node 6: Sim Recording (emerald) -->
+  <g filter="url(#cardShadow)">
+    <rect x="454" y="312" width="190" height="138" rx="10" fill="#10b981"/>
+    <text x="549" y="342" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">6. Sim Recording</text>
+    <text x="549" y="370" text-anchor="middle" font-size="11" fill="#d1fae5">same checkpoint &amp;</text>
+    <text x="549" y="385" text-anchor="middle" font-size="11" fill="#d1fae5">motion in MuJoCo</text>
+    <text x="634" y="440" text-anchor="end" font-size="10" font-style="italic" fill="#d1fae5">&#167;5.5, &#167;7</text>
+  </g>
+
+  <!-- Bottom row node 7: Comparator (indigo to violet gradient, centerpiece) -->
+  <g filter="url(#cardShadow)">
+    <rect x="671" y="312" width="190" height="138" rx="10" fill="url(#gradComp)"/>
+    <text x="766" y="342" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">7. Comparator</text>
+    <text x="766" y="370" text-anchor="middle" font-size="11" fill="#e9d5ff">per-joint state diff,</text>
+    <text x="766" y="385" text-anchor="middle" font-size="11" fill="#e9d5ff">base yaw, IMU overlay</text>
+    <text x="851" y="440" text-anchor="end" font-size="10" font-style="italic" fill="#e9d5ff">&#167;5.5, &#167;8.3</text>
+  </g>
+
+  <!-- Bottom row node 8: Real Recording (rose) -->
+  <g filter="url(#cardShadow)">
+    <rect x="888" y="312" width="190" height="138" rx="10" fill="#f43f5e"/>
+    <text x="983" y="342" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">8. Real Recording</text>
+    <text x="983" y="370" text-anchor="middle" font-size="11" fill="#ffe4e6">matched motion on</text>
+    <text x="983" y="385" text-anchor="middle" font-size="11" fill="#ffe4e6">gantry-tethered HW</text>
+    <text x="1068" y="440" text-anchor="end" font-size="10" font-style="italic" fill="#ffe4e6">&#167;5.5</text>
+  </g>
+
+  <!-- Bottom row arrows: 6 to 7 (right), 8 to 7 (left) -->
+  <line x1="646" y1="381" x2="668" y2="381" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="886" y1="381" x2="864" y2="381" stroke="#4b5563" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Caption -->
+  <text x="550" y="495" text-anchor="middle" font-size="12" font-style="italic" fill="#6b7280">Top: deployment pipeline. Bottom: sim-to-real anchor archive validation.</text>
+</svg>
