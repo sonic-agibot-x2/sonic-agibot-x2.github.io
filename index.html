@@ -50,7 +50,7 @@
           <li>
             <a
               class="pill pill--primary"
-              href="static/pdfs/cursor_paper.pdf"
+              href="static/pdfs/sonic-agibot-x2-port.pdf"
               target="_blank"
               rel="noopener"
               >Paper (PDF)</a
@@ -86,6 +86,7 @@
               muted
               loop
               preload="metadata"
+              autoplay
               aria-describedby="video-x2-caption"
             >
               <source
@@ -221,6 +222,7 @@
               muted
               loop
               preload="metadata"
+              autoplay
               aria-describedby="video-ablation-caption"
             >
               <source
@@ -284,6 +286,7 @@
               muted
               loop
               preload="metadata"
+              autoplay
               aria-describedby="video-sim2real-caption"
             >
               <source
@@ -357,7 +360,7 @@
     <footer class="site">
       <p>
         © 2026 sonic-agibot-x2 contributors ·
-        <a href="static/pdfs/cursor_paper.pdf">Paper (PDF)</a> ·
+        <a href="static/pdfs/sonic-agibot-x2-port.pdf">Paper (PDF)</a> ·
         <a href="https://github.com/meetsitaram/GR00T-WholeBodyControl"
           >Code</a
         >
@@ -410,6 +413,33 @@
         videos.forEach(function (v) {
           io.observe(v);
         });
+
+        // ---- One-time touch fallback for mobile browsers that block
+        // HTML autoplay until the page sees a user gesture (some Android
+        // builds / data-saver modes). On the first touch anywhere on the
+        // page, try to (re)play any video currently in view.
+        function kickInViewVideos() {
+          videos.forEach(function (v) {
+            if (
+              v.dataset.inView === "true" &&
+              v.dataset.userPaused !== "true" &&
+              v.paused
+            ) {
+              var p = v.play();
+              if (p && typeof p.catch === "function") p.catch(function () {});
+            }
+          });
+        }
+        var fired = false;
+        function once(ev) {
+          if (fired) return;
+          fired = true;
+          kickInViewVideos();
+          window.removeEventListener("touchstart", once, true);
+          window.removeEventListener("click", once, true);
+        }
+        window.addEventListener("touchstart", once, { capture: true, passive: true });
+        window.addEventListener("click", once, true);
       })();
 
       // ---- BibTeX copy button ----

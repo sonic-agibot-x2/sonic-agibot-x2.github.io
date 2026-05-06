@@ -31,7 +31,7 @@ paper_project_page/
     │   ├── f1_pipeline.png          # original (paper) pipeline figure (kept for reference)
     │   └── f1_pipeline_web.svg      # bright web-themed pipeline diagram (hand-authored SVG, ~8 KB)
     ├── pdfs/
-    │   └── cursor_paper.pdf         # paper PDF
+    │   └── sonic-agibot-x2-port.pdf # paper PDF (renamed from cursor_paper.pdf)
     └── videos/
         ├── x2-normal-walk-mocap-sim-real.mp4         # Video 1 (top): mocap | mujoco | real, natural walk
         ├── x2-ablation-tests-run1-vs-run2.mp4        # Video 2 (mid): foot-collision URDF ablation
