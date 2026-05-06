@@ -37,7 +37,7 @@ paper_project_page/
         ├── x2-ablation-tests-run1-vs-run2.mp4         # Video 2 (mid): foot-collision URDF ablation
         ├── x2-compare-real-sim-motions-with-plots.mp4 # Video 3 (end): real vs sim + joint plots
         ├── x2-sonic-balancing-on-one-leg.mp4          # Bonus 1 (More demos): single-leg balance pose
-        └── x2-sonic-manipulation-gestures.mp4         # Bonus 2 (More demos): upper-body / dexterous-hand gestures
+        └── x2-sonic-manipulation-gestures.mp4         # Bonus 2 (More demos): upper-body / arm gestures (fingers held at default)
 ```
 
 ## Page structure (top → bottom)
@@ -85,7 +85,7 @@ with a distinct `<h3>`, caption, and anchor:
 | `x2-ablation-tests-run1-vs-run2.mp4`            | `#video-ablation`   | 2×3 grid: top row = run 1 (2k/6k/16k checkpoints, all collapse <6 s); bottom row = run 2 with foot-collision URDF fix (all complete). 9.2 MB. |
 | `x2-compare-real-sim-motions-with-plots.mp4`    | `#video-sim2real`   | Left: real (solid) and sim (shaded) walking side-by-side in MuJoCo. Right: lower-body joint trajectories overlaid. 14 MB.                     |
 | `x2-sonic-balancing-on-one-leg.mp4`             | `#video-balance`    | Bonus (More demos): single-leg static balance under the deployed controller — out-of-distribution stance test. Portrait clip, 1.8 MB.         |
-| `x2-sonic-manipulation-gestures.mp4`            | `#video-manip`      | Bonus (More demos): coordinated upper-body and 14-DoF dexterous-hand gestures while the lower body holds stance. Portrait clip, 4.8 MB.       |
+| `x2-sonic-manipulation-gestures.mp4`            | `#video-manip`      | Bonus (More demos): coordinated arm, shoulder, and torso gestures while the lower body holds stance. Dexterous hands not commanded in this clip. Portrait clip, 4.8 MB. |
 
 Pages-relevant attributes used on every `<video>`:
 
