@@ -33,7 +33,9 @@ paper_project_page/
     ├── pdfs/
     │   └── cursor_paper.pdf         # paper PDF
     └── videos/
-        └── abigot-demo-video.mp4    # shared placeholder used in all 3 video slots
+        ├── x2-normal-walk-mocap-sim-real.mp4         # Video 1 (top): mocap | mujoco | real, natural walk
+        ├── x2-ablation-tests-run1-vs-run2.mp4        # Video 2 (mid): foot-collision URDF ablation
+        └── x2-compare-real-sim-motions-with-plots.mp4 # Video 3 (end): real vs sim + joint plots
 ```
 
 ## Page structure (top → bottom)
@@ -63,39 +65,43 @@ paper_project_page/
 - **Tokens** in `static/css/style.css`: `--accent`, `--accent-hover`,
   `--accent-gradient`. Swap these to recolor the entire site in one place.
 
-## Videos (placeholder phase)
+## Videos
 
-All three `<video>` slots reference the **same** file
-`static/videos/abigot-demo-video.mp4` (~57 MB) until per-section real clips
-are produced. Each section keeps its own distinct `<h3>`, caption, and anchor:
+Three real clips drive the page (no placeholders). Each lives in its own
+`<section class="video-block">` with a distinct `<h3>`, caption, and anchor:
 
-| Slug                          | Anchor                 | Final content                                                            |
-| ----------------------------- | ---------------------- | ------------------------------------------------------------------------ |
-| `x2_deployed_policy`          | `#video-x2`            | AgiBot X2 Ultra running the deployed Sonic-family policy on hardware.    |
-| `motion_retargeting`          | `#video-retargeting`   | Retargeting onto X2 kinematics; arm-flip / wrist-clamp fixes.            |
-| `mujoco_real_sim_sidebyside`  | `#video-sim2real`      | Side-by-side replay in MuJoCo of matched real vs sim from one checkpoint.|
+| File                                            | Anchor              | What it shows                                                                                                                                |
+| ----------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `x2-normal-walk-mocap-sim-real.mp4`             | `#video-x2`         | Three-panel natural walk: retargeted mocap (left) → MuJoCo checkpoint (mid) → real X2 hardware (right).                                       |
+| `x2-ablation-tests-run1-vs-run2.mp4`            | `#video-ablation`   | 2×3 grid: top row = run 1 (2k/6k/16k checkpoints, all collapse <6 s); bottom row = run 2 with foot-collision URDF fix (all complete).         |
+| `x2-compare-real-sim-motions-with-plots.mp4`    | `#video-sim2real`   | Left: real (solid) and sim (shaded) walking side-by-side in MuJoCo. Right: lower-body joint trajectories overlaid.                            |
 
-`<video preload="metadata">` keeps initial page weight tiny — bytes only
-download on play, and the browser caches after first play so all three
-players reuse the same blob.
+Pages-relevant attributes used on every `<video>`:
 
-### Optional: shrink the placeholder before pushing
+- `controls playsinline muted loop preload="metadata"` — autoplay-on-scroll
+  works because of `muted`; manual pause is preserved across scroll events
+  (see the IntersectionObserver script in `index.html`).
+- `preload="metadata"` keeps initial page weight low; bytes only download
+  when each clip enters the viewport.
 
-```bash
-ffmpeg -i abigot-demo-video.mp4 -vf "scale=-2:720" \
-       -c:v libx264 -crf 28 -c:a aac -b:a 96k \
-       abigot-demo-video-720p.mp4
-```
+### Replacing or adding clips later
 
-This typically drops a 57 MB clip to ~10–20 MB.
-
-### Replacing with real per-section clips
-
-1. Drop the new file in `static/videos/<slug>.mp4` (and optional poster
-   `static/images/<slug>_poster.jpg`).
+1. Drop the new file in `static/videos/<name>.mp4` (and optional poster
+   `static/images/<name>_poster.jpg`).
 2. In `index.html`, change that section's `<source src="…">` to point at
    the new file. Keep the `<h3>` and caption — the heading is what gives
    the section meaning, not the bytes.
+
+### Optional: re-encode to shrink size
+
+```bash
+ffmpeg -i input.mp4 -vf "scale=-2:720" \
+       -c:v libx264 -crf 28 -c:a aac -b:a 96k \
+       output-720p.mp4
+```
+
+The current set is ~45 MB total (well under the 50 MB GitHub-recommended
+per-file ceiling); recompression isn't required.
 
 ## Deploying to sonic-agibot-x2.github.io
 

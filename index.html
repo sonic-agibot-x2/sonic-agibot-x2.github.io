@@ -89,17 +89,20 @@
               aria-describedby="video-x2-caption"
             >
               <source
-                src="static/videos/abigot-demo-video.mp4"
+                src="static/videos/x2-normal-walk-mocap-sim-real.mp4"
                 type="video/mp4"
               />
               Your browser does not support embedded video.
             </video>
           </div>
-          <h3 id="video-x2-title">Real robot deployment</h3>
+          <h3 id="video-x2-title">Mocap → MuJoCo → real robot (natural walk)</h3>
           <p id="video-x2-caption">
-            AgiBot X2 Ultra running the deployed Sonic-family whole-body policy
-            on hardware. (Placeholder clip; per-section real footage will
-            replace this.)
+            One canonical natural-walk motion shown end-to-end: the retargeted
+            reference motion on the <strong>left</strong>, the same checkpoint
+            replayed in MuJoCo in the <strong>middle</strong>, and the
+            checkpoint deployed on the AgiBot X2 Ultra hardware on the
+            <strong>right</strong>. Same motion, three runtimes — what
+            "sim-to-sim-to-real" looks like in one frame.
           </p>
         </section>
         <!-- § Abstract -->
@@ -205,11 +208,11 @@
           </ul>
         </section>
 
-        <!-- Video 2 — motion retargeting -->
+        <!-- Video 2 — ablation: foot-collision URDF fix (run 1 vs run 2) -->
         <section
           class="video-block"
-          id="video-retargeting"
-          aria-labelledby="video-retargeting-title"
+          id="video-ablation"
+          aria-labelledby="video-ablation-title"
         >
           <div class="video-frame">
             <video
@@ -218,20 +221,30 @@
               muted
               loop
               preload="metadata"
-              aria-describedby="video-retargeting-caption"
+              aria-describedby="video-ablation-caption"
             >
               <source
-                src="static/videos/abigot-demo-video.mp4"
+                src="static/videos/x2-ablation-tests-run1-vs-run2.mp4"
                 type="video/mp4"
               />
               Your browser does not support embedded video.
             </video>
           </div>
-          <h3 id="video-retargeting-title">Motion retargeting</h3>
-          <p id="video-retargeting-caption">
-            Motion retargeting onto the X2 kinematics, illustrating the
-            arm-flip and wrist-clamp class of fixes. (Placeholder clip; real
-            retargeting visualization will replace this.)
+          <h3 id="video-ablation-title">
+            Ablation: foot-collision URDF fix (run 1 vs run 2)
+          </h3>
+          <p id="video-ablation-caption">
+            One ablation, six rollouts, same natural-walk motion. The
+            <strong>top row</strong> shows the 2k, 6k, and 16k checkpoints
+            from <strong>run 1</strong> (original foot-collision URDF) — all
+            three <strong>collapse in under 6&nbsp;s</strong>. The
+            <strong>bottom row</strong> shows the same checkpoints from
+            <strong>run 2</strong> with the foot-collision URDF fix —
+            <strong>all three run the full length without failing</strong>.
+            A single observation-layer fix swings the success rate from 0/3
+            to 3/3 across checkpoints, which is exactly why we treat this
+            class of bug as "masquerading as physics" rather than a tuning
+            problem.
           </p>
         </section>
 
@@ -258,7 +271,7 @@
           </div>
         </section>
 
-        <!-- Video 3 — MuJoCo real vs sim side-by-side (paired with anchor archive) -->
+        <!-- Video 3 — MuJoCo real vs sim side-by-side + joint plots -->
         <section
           class="video-block"
           id="video-sim2real"
@@ -274,18 +287,27 @@
               aria-describedby="video-sim2real-caption"
             >
               <source
-                src="static/videos/abigot-demo-video.mp4"
+                src="static/videos/x2-compare-real-sim-motions-with-plots.mp4"
                 type="video/mp4"
               />
               Your browser does not support embedded video.
             </video>
           </div>
-          <h3 id="video-sim2real-title">Real vs sim in MuJoCo</h3>
+          <h3 id="video-sim2real-title">
+            Real vs sim: side-by-side replay + lower-body joint plots
+          </h3>
           <p id="video-sim2real-caption">
-            Side-by-side replay in MuJoCo: matched real recording vs
-            simulated rollout from the same canonical checkpoint — the
-            visual evidence behind the anchor-archive section above.
-            (Placeholder clip; real side-by-side will replace this.)
+            <strong>Left half</strong>: two robots walking side-by-side in
+            MuJoCo — the <em>solid</em> robot replays the real-hardware
+            recording, the <em>shaded</em> robot replays the sim rollout
+            from the same canonical checkpoint.
+            <strong>Right half</strong>: per-joint trajectories for the
+            lower body, real overlaid on sim. This is the direct visual
+            evidence behind the anchor-archive numbers above — kinematic
+            chain and torso-inertial parity to within a few degrees and a
+            few percent on base IMU angular velocity, while contact /
+            friction / actuator-saturation divergences (out of scope for
+            the archive) remain visible.
           </p>
         </section>
 
