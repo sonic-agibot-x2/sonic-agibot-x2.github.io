@@ -463,6 +463,30 @@ section.block > ul {
   font-size: 0.95rem;
 }
 
+/* ---------- More-demos grid (2-up on desktop, stacked on mobile) ---------- */
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem 1.4rem;
+  margin: 0.25rem 0 0;
+}
+
+.video-block--grid {
+  margin: 0;
+  max-width: none;
+}
+
+.video-block--grid figcaption {
+  margin: 0;
+}
+
+.block-intro {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.98rem;
+}
+
 /* ---------- Citation block ---------- */
 
 .cite-box {
@@ -579,5 +603,10 @@ footer.site a {
 
   .video-block--hero {
     max-width: var(--max-read);
+  }
+
+  .video-grid {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
   }
 }

@@ -33,9 +33,11 @@ paper_project_page/
     ├── pdfs/
     │   └── sonic-agibot-x2-port.pdf # paper PDF (renamed from cursor_paper.pdf)
     └── videos/
-        ├── x2-normal-walk-mocap-sim-real.mp4         # Video 1 (top): mocap | mujoco | real, natural walk
-        ├── x2-ablation-tests-run1-vs-run2.mp4        # Video 2 (mid): foot-collision URDF ablation
-        └── x2-compare-real-sim-motions-with-plots.mp4 # Video 3 (end): real vs sim + joint plots
+        ├── x2-normal-walk-mocap-sim-real.mp4          # Video 1 (top): mocap | mujoco | real, natural walk
+        ├── x2-ablation-tests-run1-vs-run2.mp4         # Video 2 (mid): foot-collision URDF ablation
+        ├── x2-compare-real-sim-motions-with-plots.mp4 # Video 3 (end): real vs sim + joint plots
+        ├── x2-sonic-balancing-on-one-leg.mp4          # Bonus 1 (More demos): single-leg balance pose
+        └── x2-sonic-manipulation-gestures.mp4         # Bonus 2 (More demos): upper-body / dexterous-hand gestures
 ```
 
 ## Page structure (top → bottom)
@@ -52,8 +54,11 @@ paper_project_page/
 8. **Video 3** — *Real vs sim in MuJoCo* (`#video-sim2real`), paired with
    the anchor-archive prose.
 9. **Failure-Mode Taxonomy** (numbered section 5) — closing.
-10. **Citation** (numbered section 6) — BibTeX block with Copy button.
-11. **Footer**.
+10. **More demos** (numbered section 6; `#more-demos`) — 2-up grid with the
+    bonus single-leg-balance and upper-body-manipulation clips. The
+    **Videos** pill in the hero anchors here.
+11. **Citation** (numbered section 7) — BibTeX block with Copy button.
+12. **Footer**.
 
 ## Styling
 
@@ -67,20 +72,29 @@ paper_project_page/
 
 ## Videos
 
-Three real clips drive the page (no placeholders). Each lives in its own
-`<section class="video-block">` with a distinct `<h3>`, caption, and anchor:
+Five real clips drive the page (no placeholders). The first three are
+inline and interleaved with the prose; the last two live in the
+**More demos** grid near the bottom and are also where the **Videos**
+pill anchors. Each video lives in its own `<section class="video-block">`
+(or `<figure class="video-block video-block--grid">` inside the grid)
+with a distinct `<h3>`, caption, and anchor:
 
 | File                                            | Anchor              | What it shows                                                                                                                                |
 | ----------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `x2-normal-walk-mocap-sim-real.mp4`             | `#video-x2`         | Three-panel natural walk: retargeted mocap (left) → MuJoCo checkpoint (mid) → real X2 hardware (right).                                       |
-| `x2-ablation-tests-run1-vs-run2.mp4`            | `#video-ablation`   | 2×3 grid: top row = run 1 (2k/6k/16k checkpoints, all collapse <6 s); bottom row = run 2 with foot-collision URDF fix (all complete).         |
-| `x2-compare-real-sim-motions-with-plots.mp4`    | `#video-sim2real`   | Left: real (solid) and sim (shaded) walking side-by-side in MuJoCo. Right: lower-body joint trajectories overlaid.                            |
+| `x2-normal-walk-mocap-sim-real.mp4`             | `#video-x2`         | Three-panel natural walk: retargeted mocap (left) → MuJoCo checkpoint (mid) → real X2 hardware (right). 22 MB.                                |
+| `x2-ablation-tests-run1-vs-run2.mp4`            | `#video-ablation`   | 2×3 grid: top row = run 1 (2k/6k/16k checkpoints, all collapse <6 s); bottom row = run 2 with foot-collision URDF fix (all complete). 9.2 MB. |
+| `x2-compare-real-sim-motions-with-plots.mp4`    | `#video-sim2real`   | Left: real (solid) and sim (shaded) walking side-by-side in MuJoCo. Right: lower-body joint trajectories overlaid. 14 MB.                     |
+| `x2-sonic-balancing-on-one-leg.mp4`             | `#video-balance`    | Bonus (More demos): single-leg static balance under the deployed controller — out-of-distribution stance test. 18 MB.                         |
+| `x2-sonic-manipulation-gestures.mp4`            | `#video-manip`      | Bonus (More demos): coordinated upper-body and 14-DoF dexterous-hand gestures while the lower body holds stance. 58 MB.                       |
 
 Pages-relevant attributes used on every `<video>`:
 
-- `controls playsinline muted loop preload="metadata"` — autoplay-on-scroll
-  works because of `muted`; manual pause is preserved across scroll events
-  (see the IntersectionObserver script in `index.html`).
+- `controls playsinline muted loop preload="metadata" autoplay` —
+  autoplay-on-scroll works because of `muted`; manual pause is preserved
+  across scroll events (see the `IntersectionObserver` script in
+  `index.html`). A one-time `touchstart` / `click` fallback in the same
+  script kicks in-view videos for mobile browsers that gate autoplay
+  behind a user gesture.
 - `preload="metadata"` keeps initial page weight low; bytes only download
   when each clip enters the viewport.
 
@@ -100,8 +114,12 @@ ffmpeg -i input.mp4 -vf "scale=-2:720" \
        output-720p.mp4
 ```
 
-The current set is ~45 MB total (well under the 50 MB GitHub-recommended
-per-file ceiling); recompression isn't required.
+The current set is ~120 MB total. Per-file: the four locomotion / balance
+clips are all under the 50 MB GitHub-recommended ceiling, but
+`x2-sonic-manipulation-gestures.mp4` (~58 MB) is **above** it and will
+trigger a non-blocking warning on push. Re-encode that one with the
+command above (or move it to Git LFS on the Pages repo) if the warning
+becomes a problem.
 
 ## Deploying to sonic-agibot-x2.github.io
 
@@ -158,10 +176,10 @@ Live site: **https://sonic-agibot-x2.github.io/** (may take a minute after push)
 
 ### Large video file
 
-`static/videos/abigot-demo-video.mp4` is ~55 MB; GitHub warns above 50 MB but
-accepts the push. To avoid warnings, compress before rsync (see
-[Optional: shrink the placeholder](#optional-shrink-the-placeholder-before-pushing))
-or use Git LFS on the Pages repo only.
+`static/videos/x2-sonic-manipulation-gestures.mp4` is ~58 MB; GitHub
+warns above 50 MB but accepts the push. To silence the warning,
+re-encode it (see [Optional: re-encode to shrink size](#optional-re-encode-to-shrink-size))
+or move large MP4s to Git LFS on the Pages repo only.
 
 ## Local preview
 
@@ -173,8 +191,9 @@ python3 -m http.server 8000
 
 ## Future updates (not in scope for first ship)
 
-- Replace the three placeholder videos with their real per-section clips.
 - Add a CI workflow (`.github/workflows/pages.yml`) in the Pages repo if
   preferred over deploy-from-branch.
 - Update the BibTeX `@misc{...}` once the paper has an arXiv ID.
 - Confirm legal clearance on any hardware footage before public push.
+- Consider re-encoding `x2-sonic-manipulation-gestures.mp4` to drop it
+  below the 50 MB GitHub warning threshold.

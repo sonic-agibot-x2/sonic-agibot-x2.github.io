@@ -65,7 +65,7 @@
               >Code</a
             >
           </li>
-          <li><a class="pill pill--solid" href="#video-x2">Videos</a></li>
+          <li><a class="pill pill--solid" href="#more-demos">Videos</a></li>
           <li><a class="pill pill--solid" href="#citation">Citation</a></li>
         </ul>
       </div>
@@ -333,10 +333,90 @@
           </div>
         </section>
 
+        <!-- § More demos (extra clips) -->
+        <section class="block" id="more-demos" aria-labelledby="more-demos-title">
+          <h2 id="more-demos-title">
+            <span class="num">6</span>More demos
+          </h2>
+          <p class="block-intro">
+            Two additional clips of the same checkpoint family driving the
+            AgiBot X2 Ultra hardware — beyond the canonical natural-walk
+            tasks used in the abstract and ablation sections.
+          </p>
+          <div class="video-grid">
+            <figure
+              class="video-block video-block--grid"
+              id="video-balance"
+              aria-labelledby="video-balance-title"
+            >
+              <div class="video-frame">
+                <video
+                  controls
+                  playsinline
+                  muted
+                  loop
+                  preload="metadata"
+                  autoplay
+                  aria-describedby="video-balance-caption"
+                >
+                  <source
+                    src="static/videos/x2-sonic-balancing-on-one-leg.mp4"
+                    type="video/mp4"
+                  />
+                  Your browser does not support embedded video.
+                </video>
+              </div>
+              <figcaption>
+                <h3 id="video-balance-title">Single-leg balance</h3>
+                <p id="video-balance-caption">
+                  X2 holds a static single-leg pose under the deployed
+                  whole-body controller — a stress test for base-IMU
+                  feedback and ankle / hip authority outside the locomotion
+                  regime that dominates the training distribution.
+                </p>
+              </figcaption>
+            </figure>
+
+            <figure
+              class="video-block video-block--grid"
+              id="video-manip"
+              aria-labelledby="video-manip-title"
+            >
+              <div class="video-frame">
+                <video
+                  controls
+                  playsinline
+                  muted
+                  loop
+                  preload="metadata"
+                  autoplay
+                  aria-describedby="video-manip-caption"
+                >
+                  <source
+                    src="static/videos/x2-sonic-manipulation-gestures.mp4"
+                    type="video/mp4"
+                  />
+                  Your browser does not support embedded video.
+                </video>
+              </div>
+              <figcaption>
+                <h3 id="video-manip-title">Upper-body manipulation gestures</h3>
+                <p id="video-manip-caption">
+                  Whole-body policy driving coordinated arm and dexterous-hand
+                  motions while the lower body holds a stable stance —
+                  exercising the 14-DoF hands and the upper-body action
+                  channels that the natural-walk recordings touch only
+                  lightly.
+                </p>
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
         <!-- § Citation -->
         <section class="block" id="citation" aria-labelledby="citation-title">
           <h2 id="citation-title">
-            <span class="num">6</span>Citation
+            <span class="num">7</span>Citation
           </h2>
           <p>If you find this work useful, please cite:</p>
           <pre class="cite-box"><code id="bibtex">@misc{sonic2026agibotx2,
