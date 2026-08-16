@@ -63,6 +63,15 @@
     on its own body with <i>zero forgetting</i>.</p>
   </div>
 
+  <h2>How it works</h2>
+  <img src="static/images/architecture.svg" alt="System architecture: frozen GEAR-SONIC platform wrapped by the analytic codec, LoRA adapters on the dynamics decoder" style="width:100%;border-radius:8px;background:#fff;border:1px solid var(--line)">
+  <div class="cap">Everything blue is the released platform, bit-identical
+  and frozen. Everything orange is ours: a closed-form per-joint codec on
+  the way in and out, and LoRA adapters riding the dynamics decoder —
+  0.25% of the platform's parameters, the only thing trained. The paper
+  covers what the freeze makes measurable: the embodiment cost floor, the
+  information bottleneck, and the overtraining arc.</div>
+
   <h2>Relaxed walk — incumbent vs zero-shot vs adapted</h2>
   <video controls muted loop playsinline src="static/videos/row_walk.mp4"></video>
   <div class="cap"><b>Left:</b> the X2's natively trained incumbent tracker
@@ -92,15 +101,6 @@
   gates, same machine; survival = MuJoCo second referee on the OOD slice.
   In-distribution: indistinguishable. Out-of-distribution: the frozen
   prior's edge — present from the breadth phase, widened by polish.</div>
-
-  <h2>How it works</h2>
-  <img src="static/images/architecture.svg" alt="System architecture: frozen GEAR-SONIC platform wrapped by the analytic codec, LoRA adapters on the dynamics decoder" style="width:100%;border-radius:8px;background:#fff;border:1px solid var(--line)">
-  <div class="cap">Everything blue is the released platform, bit-identical
-  and frozen. Everything orange is ours: a closed-form per-joint codec on
-  the way in and out, and LoRA adapters riding the dynamics decoder —
-  0.25% of the platform's parameters, the only thing trained. The paper
-  covers what the freeze makes measurable: the embodiment cost floor, the
-  information bottleneck, and the overtraining arc.</div>
 
   <div class="foot">
     Built on the released <a href="https://nvlabs.github.io/GEAR-SONIC/">GEAR-SONIC</a> platform.
