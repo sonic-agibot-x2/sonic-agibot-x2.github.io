@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 400" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#333333"/>
+    </marker>
+  </defs>
+  <rect width="980" height="400" fill="#ffffff"/>
+
+  <!-- X2 environment -->
+  <rect x="20" y="130" width="150" height="120" rx="10" fill="#f7f7f7" stroke="#333333" stroke-width="1.5"/>
+  <text x="95" y="155" text-anchor="middle" font-size="15" font-weight="bold" fill="#111111">X2 robot / env</text>
+  <text x="95" y="178" text-anchor="middle" font-size="12" fill="#333333">reference motion</text>
+  <text x="95" y="196" text-anchor="middle" font-size="12" fill="#333333">proprioception</text>
+  <text x="95" y="222" text-anchor="middle" font-size="11" fill="#777777">31 DoF, X2 frames</text>
+
+  <!-- Phi encode -->
+  <rect x="210" y="130" width="130" height="120" rx="10" fill="#fdf1e7" stroke="#e07b39" stroke-width="2"/>
+  <text x="275" y="157" text-anchor="middle" font-size="15" font-weight="bold" fill="#b05a1d">&#934; codec</text>
+  <text x="275" y="175" text-anchor="middle" font-size="13" fill="#b05a1d">encode</text>
+  <text x="275" y="198" text-anchor="middle" font-size="11.5" fill="#7a4a20">per-joint affine</text>
+  <text x="275" y="214" text-anchor="middle" font-size="11.5" fill="#7a4a20">X2 &#8594; G1 space</text>
+  <text x="275" y="230" text-anchor="middle" font-size="11.5" fill="#7a4a20">closed-form, no net</text>
+
+  <!-- Frozen platform container -->
+  <rect x="378" y="40" width="400" height="310" rx="14" fill="#eef4fa" stroke="#2266aa" stroke-width="2" stroke-dasharray="7 5"/>
+  <text x="578" y="66" text-anchor="middle" font-size="15" font-weight="bold" fill="#2266aa">frozen platform (released GEAR-SONIC, bit-identical)</text>
+
+  <!-- Encoders -->
+  <rect x="400" y="90" width="120" height="34" rx="7" fill="#ffffff" stroke="#2266aa" stroke-width="1.5"/>
+  <text x="460" y="112" text-anchor="middle" font-size="12.5" fill="#1a4d80">G1 motion encoder</text>
+  <rect x="400" y="132" width="120" height="34" rx="7" fill="#ffffff" stroke="#2266aa" stroke-width="1.5"/>
+  <text x="460" y="154" text-anchor="middle" font-size="12.5" fill="#1a4d80">teleop encoder</text>
+  <rect x="400" y="174" width="120" height="34" rx="7" fill="#ffffff" stroke="#2266aa" stroke-width="1.5"/>
+  <text x="460" y="196" text-anchor="middle" font-size="12.5" fill="#1a4d80">SMPL encoder</text>
+
+  <!-- FSQ -->
+  <rect x="560" y="125" width="90" height="56" rx="7" fill="#ffffff" stroke="#2266aa" stroke-width="1.5"/>
+  <text x="605" y="148" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1a4d80">FSQ token</text>
+  <text x="605" y="165" text-anchor="middle" font-size="12.5" fill="#1a4d80">bottleneck</text>
+
+  <!-- Decoders -->
+  <rect x="640" y="228" width="122" height="40" rx="7" fill="#ffffff" stroke="#2266aa" stroke-width="1.5"/>
+  <text x="701" y="245" text-anchor="middle" font-size="12.5" fill="#1a4d80">kinematic decoder</text>
+  <text x="701" y="260" text-anchor="middle" font-size="11" fill="#777777">(reference recon)</text>
+
+  <rect x="490" y="228" width="130" height="40" rx="7" fill="#ffffff" stroke="#2266aa" stroke-width="1.5"/>
+  <text x="555" y="245" text-anchor="middle" font-size="12.5" fill="#1a4d80">dynamics decoder</text>
+  <text x="555" y="260" text-anchor="middle" font-size="11" fill="#777777">(joint actions)</text>
+  <!-- LoRA chip -->
+  <rect x="497" y="272" width="116" height="26" rx="13" fill="#e07b39" stroke="#b05a1d" stroke-width="1.5"/>
+  <text x="555" y="289" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">+ LoRA (0.25% params)</text>
+
+  <!-- proprio arrow into dynamics decoder -->
+  <line x1="275" y1="250" x2="275" y2="320" stroke="#333333" stroke-width="1.5"/>
+  <line x1="275" y1="320" x2="555" y2="320" stroke="#333333" stroke-width="1.5"/>
+  <line x1="555" y1="320" x2="555" y2="300" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="415" y="336" text-anchor="middle" font-size="11.5" fill="#555555">proprioception (G1 space)</text>
+
+  <!-- Phi decode -->
+  <rect x="810" y="150" width="130" height="110" rx="10" fill="#fdf1e7" stroke="#e07b39" stroke-width="2"/>
+  <text x="875" y="177" text-anchor="middle" font-size="15" font-weight="bold" fill="#b05a1d">&#934;&#8314; codec</text>
+  <text x="875" y="195" text-anchor="middle" font-size="13" fill="#b05a1d">decode</text>
+  <text x="875" y="218" text-anchor="middle" font-size="11.5" fill="#7a4a20">G1 &#8594; X2 actions</text>
+  <text x="875" y="234" text-anchor="middle" font-size="11.5" fill="#7a4a20">exact inverse</text>
+
+  <!-- arrows -->
+  <line x1="170" y1="190" x2="204" y2="190" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="340" y1="150" x2="394" y2="112" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="360" y="120" font-size="11" fill="#555555">refs</text>
+  <line x1="520" y1="107" x2="565" y2="132" stroke="#2266aa" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="520" y1="149" x2="556" y2="151" stroke="#2266aa" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <line x1="520" y1="191" x2="565" y2="172" stroke="#2266aa" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <line x1="605" y1="181" x2="605" y2="210" stroke="#2266aa" stroke-width="1.5"/>
+  <line x1="605" y1="210" x2="555" y2="210" stroke="#2266aa" stroke-width="1.5"/>
+  <line x1="555" y1="210" x2="555" y2="222" stroke="#2266aa" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="605" y1="210" x2="701" y2="210" stroke="#2266aa" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <line x1="701" y1="210" x2="701" y2="222" stroke="#2266aa" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+  <line x1="620" y1="248" x2="700" y2="248" stroke="#ffffff" stroke-width="0"/>
+  <line x1="555" y1="268" x2="555" y2="272" stroke="#b05a1d" stroke-width="0"/>
+  <line x1="620" y1="248" x2="634" y2="248" stroke="#ffffff" stroke-width="0"/>
+  <line x1="626" y1="248" x2="634" y2="248" stroke="#2266aa" stroke-width="0"/>
+  <line x1="778" y1="205" x2="804" y2="205" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="791" y="196" text-anchor="middle" font-size="11" fill="#555555">G1</text>
+  <text x="791" y="221" text-anchor="middle" font-size="11" fill="#555555">actions</text>
+
+  <!-- return to robot -->
+  <line x1="875" y1="260" x2="875" y2="372" stroke="#333333" stroke-width="1.5"/>
+  <line x1="875" y1="372" x2="95" y2="372" stroke="#333333" stroke-width="1.5"/>
+  <line x1="95" y1="372" x2="95" y2="256" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="485" y="388" text-anchor="middle" font-size="11.5" fill="#555555">X2 joint-position targets, 50 Hz PD control</text>
+
+  <!-- legend -->
+  <rect x="20" y="30" width="14" height="14" fill="#eef4fa" stroke="#2266aa" stroke-width="1.5"/>
+  <text x="40" y="42" font-size="12" fill="#333333">frozen (released weights)</text>
+  <rect x="200" y="30" width="14" height="14" fill="#fdf1e7" stroke="#e07b39" stroke-width="1.5"/>
+  <text x="220" y="42" font-size="12" fill="#333333">ours (codec + adapters)</text>
+</svg>
