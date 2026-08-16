@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cross-Embodiment Transfer of a Frozen Humanoid Whole-Body Controller</title>
+<style>
+  :root{--ink:#1e2228;--muted:#5c6570;--accent:#1e5aa4;--line:#e2ddd4;--bg:#faf9f6;--card:#ffffff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:880px;margin:0 auto;padding:3rem 1.2rem 4rem}
+  h1{font-size:1.9rem;line-height:1.25;text-align:center;margin:.2rem 0 .8rem;text-wrap:balance}
+  .authors{text-align:center;color:var(--muted);margin-bottom:.4rem}
+  .authors b{color:var(--ink);font-weight:600}
+  .affil{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:1.4rem}
+  .btns{display:flex;justify-content:center;gap:.7rem;flex-wrap:wrap;margin-bottom:2.2rem}
+  .btn{display:inline-block;padding:.5rem 1.1rem;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font-size:.92rem}
+  .btn.alt{background:var(--accent)}
+  .btn:hover{opacity:.85}
+  .tagline{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.3rem;margin-bottom:2rem}
+  .tagline p{margin:.4rem 0}
+  .big{font-size:1.06rem}
+  h2{font-size:1.25rem;margin:2.4rem 0 .8rem;border-bottom:1px solid var(--line);padding-bottom:.35rem}
+  video{width:100%;border-radius:8px;background:#000;display:block}
+  .cap{color:var(--muted);font-size:.9rem;margin:.5rem 0 1.6rem}
+  table{border-collapse:collapse;width:100%;font-size:.92rem;background:var(--card)}
+  th,td{padding:.5rem .7rem;border:1px solid var(--line);text-align:left}
+  th{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+  td.win{color:var(--accent);font-weight:600}
+  .foot{margin-top:3rem;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:1rem}
+  .foot a{color:var(--accent)}
+  @media (prefers-color-scheme: dark){
+    :root{--ink:#e8e6e1;--muted:#9aa3ae;--line:#33373e;--bg:#16181c;--card:#1f2228}
+    .btn{background:#e8e6e1;color:#16181c}.btn.alt{background:var(--accent);color:#fff}
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Cross-Embodiment Transfer of a Frozen Humanoid Whole-Body Controller via Analytic Codec and LoRA Adapters</h1>
+  <div class="authors"><b>Sitarama Chekuri</b> &nbsp;·&nbsp; <b>Claude Fable 5</b></div>
+  <div class="affil">Ultimate Bots &nbsp;·&nbsp; Anthropic (AI co-author) &nbsp;·&nbsp; draft preprint, 2026</div>
+
+  <div class="btns">
+    <a class="btn" href="static/pdfs/paper.pdf">📄 Paper (draft PDF)</a>
+    <a class="btn alt" href="https://huggingface.co/tinkerbuggy/sonic-x2">🤗 Models</a>
+    <a class="btn" href="../kplanner/">↩ Companion: frozen planner transfer</a>
+    <a class="btn alt" href="https://sonic-agibot-x2.github.io/">SONIC-X2 port</a>
+  </div>
+
+  <div class="tagline">
+    <p class="big">A frozen, publicly released whole-body controller
+    (<b>GEAR-SONIC</b>, trained on the Unitree G1) drives the
+    <b>AgiBot X2 Ultra</b> — every encoder, the token bottleneck, and the
+    motion prior untouched. A closed-form joint-space codec plus LoRA
+    adapters on one decoder (0.25% of the platform's parameters), trained
+    <b>overnight on one 8-GPU node</b> — about <b>2% of the platform's cited
+    training compute</b>.</p>
+    <p>The result is not parity but <b>reversal</b>: on out-of-distribution
+    content the transfer <b>beats the tracker natively trained for the X2</b>
+    (69.0% vs 59.0% success) — while in-distribution benchmarks cannot tell
+    the two apart. The same recipe, codec removed, specializes the platform
+    on its own body with <i>zero forgetting</i>.</p>
+  </div>
+
+  <h2>Relaxed walk — incumbent vs zero-shot vs adapted</h2>
+  <video controls muted loop playsinline src="static/videos/row_walk.mp4"></video>
+  <div class="cap"><b>Left:</b> the X2's natively trained incumbent tracker
+  (~1,600 GPU-h curriculum). <b>Middle:</b> the frozen platform through the
+  codec alone — <i>zero gradient steps</i>: geometry survives, visibly
+  choppier, and this similarity-enabled survival is a precondition
+  measurement, not a method claim. <b>Right:</b> + LoRA adapters (the
+  selected transfer): the dynamic gap absorbed. All wrists held at the
+  deploy-default pose. G1-stock reference column coming (pending a
+  validated G1 MuJoCo recording harness).</div>
+
+  <h2>Gangam dance — incumbent vs zero-shot vs adapted</h2>
+  <video controls muted loop playsinline src="static/videos/row_gangam.mp4"></video>
+  <div class="cap">Same three-way on an expressive dance. The adapted
+  transfer tracks the choreography the incumbent renders conservatively;
+  the zero-shot column shows the frozen prior's raw motion quality before
+  any dynamics adaptation.</div>
+
+  <h2>Results at a glance</h2>
+  <table>
+    <tr><th>model</th><th>novel500 (in-dist)</th><th>hard300v3 (tail)</th><th>PHUMA (OOD)</th><th>PHUMA survival</th></tr>
+    <tr><td>incumbent (native X2)</td><td>96.4 / 33.6 / 43.8</td><td>70.0 / 40.6 / 56.0</td><td>59.0 / 42.6 / 67.4</td><td>87.4</td></tr>
+    <tr><td>transfer (breadth only)</td><td>95.6 / 33.7 / 42.9</td><td>71.0 / 40.0 / 56.4</td><td>61.6 / 42.9 / 60.9</td><td>89.4</td></tr>
+    <tr><td>transfer (selected)</td><td>96.2 / 33.1 / 42.9</td><td>72.3 / 39.9 / <b>55.8</b></td><td class="win">69.0 / 41.7 / 60.6</td><td class="win">90.7</td></tr>
+  </table>
+  <div class="cap">Success % / mean mm / p95 mm (survivors), IsaacLab strict
+  gates, same machine; survival = MuJoCo second referee on the OOD slice.
+  In-distribution: indistinguishable. Out-of-distribution: the frozen
+  prior's edge — present from the breadth phase, widened by polish.</div>
+
+  <h2>What the freeze makes legible</h2>
+  <div class="tagline">
+    <p><b>The embodiment floor.</b> Every X2 model — native or transferred,
+    any budget — lands ~41–43&nbsp;mm mean error where the same platform on
+    its native body scores 32&nbsp;mm. Training moves coverage, not the
+    floor.</p>
+    <p><b>The information bottleneck.</b> Perturb a reference elbow: 73% of
+    the change reaches the commands. Perturb a wrist roll: 11% — the
+    platform never learned to encode it, and nothing downstream of the
+    freeze can recover a signal that never arrives.</p>
+    <p><b>The overtraining arc.</b> OOD success climbs, peaks, then declines
+    monotonically under continued fine-tuning while in-distribution metrics
+    stay flat — gated evaluation with a stop rule is not optional.</p>
+  </div>
+
+  <div class="foot">
+    Built on the released <a href="https://nvlabs.github.io/GEAR-SONIC/">GEAR-SONIC</a> platform.
+    Companion work: <a href="../kplanner/">frozen-planner transfer</a>.
+    Closest prior work: Any2Any (LimX Dynamics) — low-cost parity across
+    dissimilar humanoids; this page: frozen-platform reversal on a
+    closely-matched pair.
+  </div>
+</main>
+</body>
+</html>
