@@ -116,6 +116,13 @@
   That checkpoint targets the slow-precision regime and wrist accuracy, and the
   whole-body controllers derived from it are the ones exhibiting this
   behaviour.</p>
+  <p>It has <b>never been reproduced in simulation</b> &mdash; not on a
+  workstation, and not on the robot's own aarch64 binary driven by the
+  operator's own recorded command tape, with model, tuning and actuator plant
+  byte-identical. In sim the same gesture is the calmest part of the trace:
+  0.9&ndash;1.8&deg; of hip tracking error against 42&deg; on hardware. That
+  rules out configuration, the build, and the operator input &mdash; and leaves
+  the cause open.</p>
   <p>The central unknown is the torque demand itself: the model repeatedly asks
   for more than the hardware can produce, for reasons not yet isolated &mdash;
   and this may be something the cross-embodiment transfer simply cannot achieve.

@@ -144,6 +144,43 @@
     error, which the error then grew to cancel.</p>
   </div>
 
+  <h2>It does not reproduce in simulation</h2>
+  <div class="card">
+    <p><b>This is the part that keeps the cause open.</b> The event has never
+    been reproduced in sim &mdash; not for want of trying, and not on a
+    mismatched rig.</p>
+  </div>
+  <p>The full loop was rebuilt end to end &mdash; planner &rarr; pose watchdog
+  &rarr; deploy &rarr; MuJoCo &mdash; and driven by <b>the operator's own
+  recorded command tape</b> from the 13:39 event, replayed at its recorded
+  inter-event timings. Not an approximation of the gesture: the same intents,
+  the same 20&nbsp;ms stick step, the same 4&nbsp;s pause after a full-speed
+  walk.</p>
+  <p>It was run twice: once on <b>the robot's own aarch64 binary</b>, on the
+  robot's own compute, which controls for build, ONNX runtime and system
+  libraries as well as configuration; and once on a workstation where physics
+  keeps real time. Byte-identical across both: planner ONNX, policy ONNX,
+  tuning preset, all three actuator-plant files, and the environment profile.</p>
+  <table>
+    <tr><th></th><th>hardware</th><th>simulation</th></tr>
+    <tr><td>hip tracking error during the turn</td><td class="bad">42&deg;</td><td>0.9&ndash;1.8&deg;</td></tr>
+    <tr><td>peak hip demand</td><td class="bad">84.5 N&middot;m</td><td>&mdash;</td></tr>
+    <tr><td>body tilt</td><td class="bad">31.5&deg;</td><td>&lt; 3.4&deg;</td></tr>
+    <tr><td>outcome</td><td class="bad">cascade, e-stop</td><td>nothing</td></tr>
+  </table>
+  <p>The turn phase &mdash; the exact gesture and the exact moment &mdash; is
+  the <i>calmest</i> part of the simulated trace. Neither platform produced
+  anything resembling the event.</p>
+  <p>One thing sim did reveal, by accident: the safety clamp that was supposed
+  to prevent this <b>saturates during ordinary walking</b>, harmlessly, for the
+  same 200&nbsp;ms duration seen in the event. It is not a bound the failure
+  exceeded; it is a bound the policy rides routinely &mdash; which is why it
+  never served the purpose it was added for.</p>
+  <p>So the gap is not configuration, not the build, and not the operator's
+  input. It is somewhere in contact reality, actuator behaviour, or something
+  the simulator does not model at all &mdash; and until it can be reproduced,
+  every proposed guard is being sized against a single recording.</p>
+
   <h2>Where this leaves the transfer</h2>
   <div class="card">
     <p>The frozen-G1 approach is proving <b>substantially harder against the
