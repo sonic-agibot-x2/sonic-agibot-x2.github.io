@@ -91,6 +91,40 @@
   the zero-shot column shows the frozen prior's raw motion quality before
   any dynamics adaptation.</div>
 
+  <h2>When it does not transfer: an anomaly at millisecond scale</h2>
+  <video controls muted loop playsinline preload="metadata"
+         src="static/videos/anomaly_gauges.mp4"></video>
+  <div class="cap">A commanded in-place turn on hardware. Real time first (with
+  sound), then the same 2.1&nbsp;s at 10&times; slow motion with live telemetry:
+  dials are <b>PD torque demand</b> per hip and knee &mdash; green, amber past
+  the ~73&nbsp;N&middot;m stick-slip break-away, red past the
+  120&nbsp;N&middot;m motor rating &mdash; and the traces beneath are joint
+  speed. The controller asks for torques the actuators cannot deliver
+  (<b>199&nbsp;N&middot;m demanded of a 120&nbsp;N&middot;m joint</b>), the
+  firmware saturates, and the joint pins against a limit it cannot reach. We
+  have not yet isolated why.
+  <br><br>
+  Full write-ups, with the planner reference overlaid in MuJoCo:
+  <a href="anomalies/#a1">hip roll burst (2026-08-25)</a> &nbsp;&middot;&nbsp;
+  <a href="anomalies/#a2">torque reversal under softened hips (2026-08-26)</a>.
+  </div>
+
+  <div class="tagline">
+  <p class="big"><b>An open difficulty, stated plainly.</b> The frozen-G1
+  approach is proving substantially harder against the recently released
+  <b>fine-grained manipulation checkpoint</b> than against the earlier core.
+  That checkpoint targets the slow-precision regime and wrist accuracy, and the
+  whole-body controllers derived from it are the ones exhibiting this
+  behaviour.</p>
+  <p>The central unknown is the torque demand itself: the model repeatedly asks
+  for more than the hardware can produce, for reasons not yet isolated &mdash;
+  and this may be something the cross-embodiment transfer simply cannot achieve.
+  The frozen prior asks for dynamics this embodiment's actuators cannot realise,
+  and nothing in training penalises the ask, because in simulation the actuator
+  limit is absorbed for free. Rolling back to the natively-trained incumbent
+  removes the behaviour entirely.</p>
+  </div>
+
   <h2>Results at a glance</h2>
   <table>
     <tr><th>model</th><th>novel500 (in-dist)</th><th>hard300v3 (tail)</th><th>PHUMA (OOD)</th><th>PHUMA survival</th></tr>

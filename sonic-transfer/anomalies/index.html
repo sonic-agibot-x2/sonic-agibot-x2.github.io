@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anomalies — debugging a whole-body controller at millisecond scale</title>
+<style>
+  :root{--ink:#1e2228;--muted:#5c6570;--accent:#1e5aa4;--crit:#a3302a;--line:#e2ddd4;--bg:#faf9f6;--card:#ffffff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  main{max-width:880px;margin:0 auto;padding:3rem 1.2rem 4rem}
+  h1{font-size:1.9rem;line-height:1.25;text-align:center;margin:.2rem 0 .8rem;text-wrap:balance}
+  .sub{text-align:center;color:var(--muted);margin-bottom:1.6rem}
+  .btns{display:flex;justify-content:center;gap:.7rem;flex-wrap:wrap;margin-bottom:2.2rem}
+  .btn{display:inline-block;padding:.5rem 1.1rem;border-radius:999px;background:var(--ink);color:#fff;text-decoration:none;font-size:.92rem}
+  .btn.alt{background:var(--accent)}
+  .btn:hover{opacity:.85}
+  h2{font-size:1.25rem;margin:2.4rem 0 .8rem;border-bottom:1px solid var(--line);padding-bottom:.35rem}
+  h3{font-size:1.02rem;margin:1.6rem 0 .5rem}
+  video{width:100%;border-radius:8px;background:#000;display:block}
+  .cap{color:var(--muted);font-size:.9rem;margin:.5rem 0 1.6rem}
+  table{border-collapse:collapse;width:100%;font-size:.92rem;background:var(--card);margin:.6rem 0 1.2rem}
+  th,td{padding:.5rem .7rem;border:1px solid var(--line);text-align:left}
+  th{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+  td.bad{color:var(--crit);font-weight:600}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.3rem;margin:1.2rem 0}
+  .card p:first-child{margin-top:0}.card p:last-child{margin-bottom:0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:rgba(0,0,0,.05);padding:.1em .35em;border-radius:4px}
+  .foot{margin-top:3rem;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:1rem}
+  .foot a,main a{color:var(--accent)}
+  @media (prefers-color-scheme: dark){
+    :root{--ink:#e8e6e1;--muted:#9aa3ae;--line:#33373e;--bg:#16181c;--card:#1f2228;--crit:#e07b74}
+    .btn{background:#e8e6e1;color:#16181c}.btn.alt{background:var(--accent);color:#fff}
+    code{background:rgba(255,255,255,.07)}
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Anomalies: debugging a whole-body controller at millisecond scale</h1>
+  <div class="sub">Two hardware captures from the X2 Ultra, 2026-08-25 and 2026-08-26</div>
+  <div class="btns">
+    <a class="btn alt" href="../">← Project page</a>
+    <a class="btn" href="#a1">Hip roll burst</a>
+    <a class="btn" href="#a2">Torque reversal</a>
+  </div>
+
+  <div class="card">
+    <p><b>The open problem, stated plainly.</b> The controller intermittently
+    demands torques the hardware cannot deliver — up to <b>199 N·m from a
+    120 N·m joint</b> — and we do not yet know why. The firmware saturates, the
+    joint pins against a limit it cannot reach, and what follows is a cascade
+    the robot does not recover from on its own.</p>
+    <p>These pages are the evidence trail. Both events were caught on a 50 Hz
+    ring buffer that only dumps when something trips, so what you are reading is
+    reconstructed from 20 ms samples of the run-up.</p>
+  </div>
+
+  <h2 id="a1">Anomaly 1 — hip roll burst (2026-08-25)</h2>
+  <video controls muted loop playsinline preload="metadata"
+         src="../static/videos/anomaly_gauges.mp4"></video>
+  <div class="cap">Real time first (5.6 s, with sound), then the same event at
+  10× slow motion with live instrumentation. Dials are <b>PD torque demand</b>
+  per joint — green, amber past the ~73 N·m stick-slip break-away, red past the
+  120 N·m motor rating. Traces below are joint speed. Everything is signed and
+  centre-zero, because the sign <i>flip</i> is part of the signature.</div>
+
+  <h3>The same event in MuJoCo, against the planner's reference</h3>
+  <video controls muted loop playsinline preload="metadata"
+         src="../static/videos/anomaly1_mujoco.mp4"></video>
+  <div class="cap"><b>Translucent blue</b> is the kplanner reference — what the
+  robot was <i>asked</i> to do. <b>Solid</b> is what it actually did: measured
+  joint angles plus IMU orientation, on a shared clock. The two separate
+  <i>before</i> the body starts to fall. Root translation is the planner's (the
+  deploy telemetry carries no odometry), so watch limbs and tilt, not drift.</div>
+
+  <h3>What the recorder shows</h3>
+  <table>
+    <tr><th></th><th>value</th><th>meaning</th></tr>
+    <tr><td>peak demand, <code>left_hip_roll</code></td><td class="bad">84.5 N·m</td><td>against 42° of tracking error</td></tr>
+    <tr><td>peak demand, <code>right_knee</code></td><td class="bad">199.4 N·m</td><td>on a 120 N·m joint — 1.7× rating</td></tr>
+    <tr><td>body tilt when the hips first passed 40 N·m</td><td>1.9°</td><td>upright: the command led the fall</td></tr>
+    <tr><td>first threshold crossing → release</td><td>160 ms</td><td>the whole burst</td></tr>
+    <tr><td>final tilt</td><td class="bad">31.5°</td><td>operator e-stop</td></tr>
+  </table>
+  <p>No automatic guard fired. The tilt watchdog sits at 72.5° and the velocity
+  trip at 35 rad/s; neither was close. A human pressed the button.</p>
+
+  <h2 id="a2">Anomaly 2 — torque reversal under softened hips (2026-08-26)</h2>
+  <video controls muted loop playsinline preload="metadata"
+         src="../static/videos/anomaly2_mujoco.mp4"></video>
+  <div class="cap">A deliberate re-run with hip stiffness cut 20%, to test
+  whether lower gain bounds the torque. Same ghost-vs-solid convention.</div>
+
+  <h3>It does not</h3>
+  <table>
+    <tr><th></th><th>kp ×1.00</th><th>kp ×0.80</th></tr>
+    <tr><td>peak hip demand</td><td>84.5 N·m</td><td class="bad">84.1 N·m</td></tr>
+    <tr><td>tracking error at that peak</td><td>42.0°</td><td>44.3°</td></tr>
+    <tr><td>outcome</td><td>cascade → e-stop</td><td>arrested by the gantry</td></tr>
+  </table>
+  <p>Cutting stiffness by 20% produced <b>the same torque</b>, because the
+  tracking error grew to compensate: <code>τ = kp·err</code>, and the plant
+  simply moves along that curve. Three hardware rungs were tried — at ×0.60 the
+  robot could not hold a stand and was <i>worse</i> by torque; at ×0.70 with
+  softened knees the peaks fell but sustained load and audible knee clicking
+  both rose.</p>
+
+  <div class="card">
+    <p><b>Why gain scaling could never have worked.</b> The action scale is
+    computed from the <i>unscaled</i> plant and baked into the deployed
+    constants, so <code>kp_scale</code> does not touch it. No gain rung could
+    reduce the commanded target excursion — only the torque produced per unit of
+    error, which the error then grew to cancel.</p>
+  </div>
+
+  <h2>Where this leaves the transfer</h2>
+  <div class="card">
+    <p>The frozen-G1 approach is proving <b>substantially harder against the
+    recently released fine-grained manipulation checkpoint</b> than against the
+    earlier core. That checkpoint targets slow-precision manipulation and wrist
+    accuracy, and the whole-body controllers derived from it are the ones
+    exhibiting this behaviour.</p>
+    <p>The central unknown is the one at the top of this page: <b>the model
+    demands torques the hardware cannot produce, for reasons we have not yet
+    isolated.</b> It may be something the cross-embodiment transfer simply
+    cannot achieve — the frozen prior asking for dynamics that this embodiment's
+    actuators cannot realise, with nothing in training to penalise the ask
+    because in simulation the limit is absorbed for free.</p>
+    <p>Rolling back to the natively-trained incumbent removes the behaviour
+    entirely: peak knee demand 69 N·m against 160, six times less time above the
+    break-away threshold, and smooth walks and turns reported by the operator.</p>
+  </div>
+
+  <div class="foot">
+    Captures, extracted series and the exact configs that produced them are kept
+    with the run data. Torque figures throughout are <b>PD demand</b> —
+    <code>kp·(target−pos) − kd·vel</code>, what the control law asked for. No
+    motor exceeds its rating: the firmware saturates, so demand above the limit
+    means the joint was pinned there. Nothing on the deploy side measures
+    delivered torque.
+    &nbsp;·&nbsp; <a href="../">Back to the project page</a>
+  </div>
+</main>
+</body>
+</html>
