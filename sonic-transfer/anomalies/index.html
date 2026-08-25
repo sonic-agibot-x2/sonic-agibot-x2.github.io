@@ -56,6 +56,36 @@
     reconstructed from 20 ms samples of the run-up.</p>
   </div>
 
+  <h2>How any of this was recoverable: the black box</h2>
+  <p>A humanoid that falls tells you almost nothing after the fact. The useful
+  information is in the <i>run-up</i> &mdash; the few hundred milliseconds
+  before anything visible happens &mdash; and by the time a human reacts it is
+  long gone.</p>
+  <p>So the deploy carries a <b>pre-trigger ring buffer</b>: the last
+  <b>30&nbsp;seconds</b> of full state at 50&nbsp;Hz, continuously overwritten
+  and never written to disk. It dumps <b>only when something trips</b> &mdash;
+  an operator e-stop, a tilt watchdog, a stale-state fault. What lands on disk
+  is therefore the approach to the fault, not the damping that follows it.</p>
+  <p>Crucially it records the <b>whole command chain</b>, not just the outcome,
+  so a divergence can be attributed to a stage rather than guessed at:</p>
+  <table>
+    <tr><th>stage</th><th>channel</th></tr>
+    <tr><td>what the planner asked for</td><td><code>ref_pos_mj</code></td></tr>
+    <tr><td>raw policy output</td><td><code>action_pre_clip_il</code></td></tr>
+    <tr><td>after the action clip</td><td><code>action_post_clip_il</code></td></tr>
+    <tr><td>target before the safety clamp</td><td><code>target_raw_mj</code></td></tr>
+    <tr><td>target actually published</td><td><code>target_final_mj</code></td></tr>
+    <tr><td>what the control law asked of the motor</td><td><code>pd_torque_demand_mj</code></td></tr>
+    <tr><td>what the joint actually did</td><td><code>joint_pos_mj</code>, <code>joint_vel_mj</code></td></tr>
+    <tr><td>what the body did</td><td><code>base_quat_wxyz</code>, <code>base_gyro_xyz</code></td></tr>
+    <tr><td>motor thermals, per-source staleness</td><td><code>motor_temp_c</code>, <code>src_age_s</code></td></tr>
+  </table>
+  <p>Both findings on this page come from that: <i>the commanded target left the
+  reference while the body was still upright</i> is only sayable because the
+  reference, the target and the measured position are all in the same dump on
+  the same clock, 20&nbsp;ms apart. Every number below is read from it &mdash;
+  nothing is inferred from video.</p>
+
   <h2 id="a1">Anomaly 1 — hip roll burst (2026-08-25)</h2>
   <video controls muted loop playsinline preload="metadata"
          src="../static/videos/anomaly_gauges.mp4"></video>
