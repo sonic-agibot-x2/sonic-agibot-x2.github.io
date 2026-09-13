@@ -73,6 +73,15 @@
     (69.0% vs 59.0% success) — while in-distribution benchmarks cannot tell
     the two apart. The same recipe, codec removed, specializes the platform
     on its own body with <i>zero forgetting</i>.</p>
+    <p><b>New in v0.2 (2026-09-12):</b> the reversal survives hardware — an
+    <b>18-minute untethered rough-terrain walk</b> (grass, ramp, curb,
+    pebbles; no e-stop, tilt p99 9.0°, three ≥20° excursions each recovered
+    within 0.8 s) where the native line showed close-call imbalance on the
+    same ground minutes later, running hotter. Plus: the platform's
+    <b>human-pose (SMPL) input path recovered</b> to incumbent parity with a
+    0.3 sampling share, and the embodiment floor's actuator share anatomized
+    — including a reward-margin pathology in which a 0.8 margin silently
+    re-imposed a 19.2 N·m "hardware" ceiling.</p>
   </div>
 
   <h2>How it works</h2>
@@ -154,6 +163,30 @@
   gates, same machine; survival = MuJoCo second referee on the OOD slice.
   In-distribution: indistinguishable. Out-of-distribution: the frozen
   prior's edge — present from the breadth phase, widened by polish.</div>
+
+  <h2>Three-way, v0.2: stock platform vs 39k incumbent vs frozen-G1 transfer</h2>
+  <table>
+    <tr><th>set (encoder)</th><th>stock platform (G1 body)</th><th>incumbent, 39k (X2)</th><th>transfer (X2)</th></tr>
+    <tr><td>novel487 (G1)</td><td>480</td><td>474</td><td>469</td></tr>
+    <tr><td>novel487 (SMPL)</td><td>447</td><td>428</td><td class="win">427</td></tr>
+    <tr><td>VR capture 27 (SMPL)</td><td>4</td><td>18</td><td>15</td></tr>
+    <tr><td>VR capture 31 (G1)</td><td>14</td><td>24</td><td class="win">25 [26]</td></tr>
+    <tr><td>VR capture 36 (G1)</td><td>20</td><td>29</td><td class="win">29 [31]</td></tr>
+    <tr><td>teleop tapes 29 (G1)</td><td>—</td><td>20</td><td>16 [18]</td></tr>
+    <tr><td>robot spans 26 (G1)</td><td>—</td><td>18</td><td>13 [15]</td></tr>
+    <tr><td>holds 24 / chores 8 (G1)</td><td>—</td><td>24, 8</td><td class="win">24, 8</td></tr>
+    <tr><td>hard300 (G1)</td><td>—</td><td>213–217</td><td class="win">224</td></tr>
+  </table>
+  <div class="cap">Passes/total, strict gates; brackets = the line's best
+  single checkpoints. Both lines continued training past the paper's
+  Table 1: the incumbent to its 39k checkpoints, the transfer under the
+  vendor-true actuator plant with the SMPL sampling share. The stock
+  platform column is the release on its own G1 body (VR rows: its own G1
+  retargets) — it drops seven points through its own SMPL path
+  (98.6→91.8%) and scores 4/27 on the hardest VR-capture source, so most
+  of the remaining gap is the input path and capture source, not the
+  transfer. The transfer trails only on the two teleop-executed sets —
+  the incumbent's home-field content.</div>
 
   <div class="foot">
     Built on the released <a href="https://nvlabs.github.io/GEAR-SONIC/">GEAR-SONIC</a> platform.
