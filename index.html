@@ -88,6 +88,7 @@
               >Paper (PDF)</a
             >
           </li>
+          <li><a class="pill pill--solid" href="#evaluation">Evaluation</a></li>
           <li><a class="pill pill--solid" href="#more-demos">Videos</a></li>
           <li><a class="pill pill--solid" href="#citation">Citation</a></li>
         </ul>
@@ -110,73 +111,50 @@
               loop
               preload="metadata"
               autoplay
-              poster="static/images/og_preview.jpg"
+              poster="static/images/hero_relaxed_walk_fixedretarget.jpg"
               aria-describedby="video-x2-caption"
             >
               <source
-                src="static/videos/x2-normal-walk-mocap-sim-real.mp4"
+                src="static/videos/x2-relaxed-walk-fixedretarget-mocap-sim-real.mp4"
                 type="video/mp4"
               />
               Your browser does not support embedded video.
             </video>
           </div>
           <h3 id="video-x2-title">
-            End-to-end deployment pipeline: retarget → MuJoCo → real X2
+            From reference motion to the real robot
           </h3>
           <p id="video-x2-caption">
-            The full deployment pipeline on a single canonical natural-walk
-            motion. <strong>Left</strong>: the retargeted reference motion
-            (mocap retargeted onto the X2 morphology) — the upstream input
-            to training. <strong>Middle</strong>: the trained whole-body
-            controller checkpoint replayed in MuJoCo. <strong>Right</strong>:
-            the <em>same</em> checkpoint deployed on the AgiBot X2 Ultra
-            hardware. Reference, simulator, real — three stages of one
-            pipeline on the same motion.
+            One motion, three stages: the retargeted reference motion, the trained controller
+            in simulation, and the same controller on the AgiBot X2 Ultra.
+            <span style="color:#7a8290;font-size:.92em">Source motion: BonesSeed relaxed walk motion.</span>
           </p>
         </section>
         <!-- § Abstract -->
         <section class="block abstract" aria-labelledby="abstract-title">
           <h2 id="abstract-title">
-            <span class="num">1</span>Abstract
+            <span class="num">1</span>Overview
           </h2>
           <p>
-            We deploy a learned whole-body controller on the AgiBot&nbsp;X2
-            Ultra (31&nbsp;DoF, 14-DoF dexterous hands) — to our knowledge the
-            first publicly documented Sonic-family policy on a non-G1
-            humanoid. Reaching the real robot from upstream Sonic required
-            closing two sequential transfers: a <em>sim-to-sim</em> transfer
-            from the training simulator (IsaacLab) to the deployment
-            evaluation simulator (MuJoCo), and a <em>sim-to-real</em> transfer
-            from MuJoCo to hardware through a closed-API vendor motion
+            SONIC is NVIDIA's whole-body motion controller for humanoids, released with
+            a trained policy for the Unitree&nbsp;G1. This project trains the same
+            controller for the AgiBot&nbsp;X2 Ultra (31&nbsp;DoF) and brings it to the
+            real robot, following the same recipe as the G1 release: human motion
+            from the BonesSeed dataset is retargeted onto the X2 body, a whole-body
+            controller is trained on that motion library in simulation, and the
+            trained policy is deployed on hardware through the robot's own motion
             controller.
           </p>
           <p>
-            Adapting upstream Sonic surfaced gaps at every layer. Motion
-            retargeting introduced <strong>arm-flip</strong> and
-            <strong>wrist-clamp</strong> failures rooted in inverse-kinematics
-            assumptions specific to the original platform. The sim-to-sim
-            transfer was blocked by three independent observation- and
-            encoding-layer bugs that masqueraded as physics-tuning problems:
-            a <strong>foot-collision URDF mismatch</strong> in the training
-            distribution; a
-            <strong>6D-rotation channel-order error</strong> that survived
-            our tolerance-based parity checks because permutations preserve
-            aggregate norms; and a
-            <strong>tokenizer-layout error</strong> at the
-            runtime-to-export adapter boundary.
+            The result is an X2 that can follow a wide range of reference motions —
+            walking, dancing, gestures — and can be driven live
+            by a person in whole-body teleoperation, with the operator's VR-captured
+            motion streamed to the robot in real time.
           </p>
           <p>
-            The sim-to-real handoff produced roughly 1.6&nbsp;s of
-            <strong>dual-publisher whir</strong> because the vendor controller
-            exposed only coarse start/stop primitives and no graceful-overlap
-            command; a persistent-client mode escalator with controller-reported
-            mode as ground truth reduced measured dwell in the intermediate
-            joint-default state to 0.20&nbsp;s, and we compose a finite-state
-            protocol around the same primitives so the operator hears a single
-            continuous handoff. We close with a four-class failure-mode
-            taxonomy — bug, physics-divergence, handoff, and tuning —
-            intended as an organising principle for subsequent humanoid
-            deployments.
+            Below: the pipeline from reference motion to the real robot, an
+            evaluation of the X2 model against the stock G1 release under the SONIC
+            paper's own criterion, and more clips on hardware.
           </p>
         </section>
 
@@ -199,164 +177,41 @@
           </figure>
         </section>
 
-        <!-- § Key Takeaways (1–3) -->
-        <section class="block" aria-labelledby="takeaways1-title">
-          <h2 id="takeaways1-title">
-            <span class="num">3</span>Key Takeaways
-          </h2>
-          <ul class="takeaways takeaways--bullets">
-            <li>
-              <h3>Two sequential transfers, not one</h3>
-              <p>
-                We treat IsaacLab → MuJoCo as a first-class
-                <em>sim-to-sim</em> bridge, then MuJoCo → hardware as
-                <em>sim-to-real</em>. Each layer gets its own validation
-                substrate; this separation is what made debugging tractable.
-              </p>
-            </li>
-            <li>
-              <h3>Three observation/encoding bugs masqueraded as physics</h3>
-              <p>
-                A foot-collision URDF mismatch, a 6D-rotation channel-order
-                error (norms hide permutations), and a tokenizer-layout error
-                at the export-adapter boundary. Each was confirmed by a
-                controlled fine-tune validation rather than tolerance-based
-                parity alone.
-              </p>
-            </li>
-            <li>
-              <h3>Dual-publisher whir: 1.6&nbsp;s → 0.20&nbsp;s</h3>
-              <p>
-                A persistent-client mode escalator using
-                controller-reported mode as ground truth, wrapped in a
-                finite-state protocol around the vendor's coarse start/stop
-                primitives, collapses the audible handoff into a single
-                continuous transition.
-              </p>
-            </li>
-          </ul>
-        </section>
-
-        <!-- Video 2 — ablation: foot-collision URDF fix (run 1 vs run 2) -->
-        <section
-          class="video-block"
-          id="video-ablation"
-          aria-labelledby="video-ablation-title"
-        >
-          <div class="video-frame">
-            <video
-              controls
-              playsinline
-              muted
-              loop
-              preload="metadata"
-              autoplay
-              aria-describedby="video-ablation-caption"
-            >
-              <source
-                src="static/videos/x2-ablation-tests-run1-vs-run2.mp4"
-                type="video/mp4"
-              />
-              Your browser does not support embedded video.
-            </video>
-          </div>
-          <h3 id="video-ablation-title">
-            Ablation: foot-collision URDF fix (run 1 vs run 2)
-          </h3>
-          <p id="video-ablation-caption">
-            One ablation, six rollouts, same natural-walk motion. The
-            <strong>top row</strong> shows the 2k, 6k, and 16k checkpoints
-            from <strong>run 1</strong> (original foot-collision URDF) — all
-            three <strong>collapse in under 6&nbsp;s</strong>. The
-            <strong>bottom row</strong> shows the same checkpoints from
-            <strong>run 2</strong> with the foot-collision URDF fix —
-            <strong>all three run the full length without failing</strong>.
-            A single observation-layer fix swings the success rate from 0/3
-            to 3/3 across checkpoints, which is exactly why we treat this
-            class of bug as "masquerading as physics" rather than a tuning
-            problem.
-          </p>
-        </section>
-
-        <!-- § Sim-to-real anchor archive (Takeaway #4 — paired with Video 3) -->
-        <section class="block" aria-labelledby="anchor-title">
-          <h2 id="anchor-title">
-            <span class="num">4</span>Sim-to-Real Anchor Archive
+        <!-- § Evaluation under the SONIC paper's criterion -->
+        <section class="block" id="evaluation" aria-labelledby="evaluation-title">
+          <h2 id="evaluation-title">
+            <span class="num">3</span>Evaluation under the SONIC paper's criterion
           </h2>
           <div class="content-card">
-            <h3>What three matched recordings can — and cannot — prove</h3>
+            <style>
+              .evaltable{width:100%;border-collapse:collapse;margin:.6rem 0 1rem;font-size:.92rem}
+              .evaltable th,.evaltable td{padding:.35rem .6rem;border-bottom:1px solid rgba(128,128,128,.35);text-align:left;vertical-align:top}
+              .evaltable th{font-weight:600}
+              .evaltable td.win{font-weight:600}
+            </style>
+            <h3>Success rate (%)</h3>
+            <table class="evaltable">
+              <tr><th>set</th><th>G1 with Stock Model</th><th>X2 Trained Model</th></tr>
+              <tr><td>novel500 (in-distribution)</td><td>97.8</td><td>97.2</td></tr>
+              <tr><td>hard300 (in-distribution tail)</td><td>89.0</td><td>73.3</td></tr>
+              <tr><td>PHUMA 1,931 (out-of-distribution)</td><td>86.8</td><td>66.2</td></tr>
+              <tr><td>Pico captures via the SMPL encoder (27)</td><td>40.7</td><td class="win">66.7</td></tr>
+            </table>
+            <h3>Tracking error (MPJPE-L, mm, successful clips only)</h3>
+            <table class="evaltable">
+              <tr><th>set</th><th>G1 with Stock Model</th><th>X2 Trained Model</th></tr>
+              <tr><td>novel500 (in-distribution)</td><td>26.9</td><td>34.3</td></tr>
+              <tr><td>hard300 (in-distribution tail)</td><td>35.3</td><td>41.5</td></tr>
+              <tr><td>PHUMA 1,931 (out-of-distribution)</td><td>32.8</td><td>43.4</td></tr>
+              <tr><td>Pico captures via the SMPL encoder (27)</td><td>40.4</td><td>42.4</td></tr>
+            </table>
             <p>
-              A committed archive of three matched simulator–hardware
-              recordings from a single canonical checkpoint validates the
-              URDF/MJCF kinematic chain and torso inertial model to within
-              roughly <strong>5°</strong> per-DoF RMS and base IMU angular
-              velocity to within roughly <strong>5%</strong>. We explicitly
-              scope the archive's <em>non-coverage</em>: foot contact,
-              friction, free-base dynamics, actuator saturation, and sensor
-              noise are <em>not</em>, and cannot be, addressed by these
-              recordings — and we close with a set of policy-free bench
-              tests that would convert this indirect closed-loop evidence
-              into direct, component-level validation.
-            </p>
-          </div>
-        </section>
-
-        <!-- Video 3 — MuJoCo real vs sim side-by-side + joint plots -->
-        <section
-          class="video-block"
-          id="video-sim2real"
-          aria-labelledby="video-sim2real-title"
-        >
-          <div class="video-frame">
-            <video
-              controls
-              playsinline
-              muted
-              loop
-              preload="metadata"
-              autoplay
-              aria-describedby="video-sim2real-caption"
-            >
-              <source
-                src="static/videos/x2-compare-real-sim-motions-with-plots.mp4"
-                type="video/mp4"
-              />
-              Your browser does not support embedded video.
-            </video>
-          </div>
-          <h3 id="video-sim2real-title">
-            Real vs sim: side-by-side replay + lower-body joint plots
-          </h3>
-          <p id="video-sim2real-caption">
-            <strong>Left half</strong>: two robots walking side-by-side in
-            MuJoCo — the <em>solid</em> robot replays the real-hardware
-            recording, the <em>shaded</em> robot replays the sim rollout
-            from the same canonical checkpoint.
-            <strong>Right half</strong>: per-joint trajectories for the
-            lower body, real overlaid on sim. This is the direct visual
-            evidence behind the anchor-archive numbers above — kinematic
-            chain and torso-inertial parity to within a few degrees and a
-            few percent on base IMU angular velocity, while contact /
-            friction / actuator-saturation divergences (out of scope for
-            the archive) remain visible.
-          </p>
-        </section>
-
-        <!-- § Failure-mode taxonomy (Takeaway #5 — closing) -->
-        <section class="block" aria-labelledby="taxonomy-title">
-          <h2 id="taxonomy-title">
-            <span class="num">5</span>Failure-Mode Taxonomy
-          </h2>
-          <div class="content-card">
-            <h3>Four classes for organising the next deployment</h3>
-            <p>
-              We close with a four-class failure-mode taxonomy —
-              <strong>bug</strong>, <strong>physics-divergence</strong>,
-              <strong>handoff</strong>, and <strong>tuning</strong> —
-              intended as an organising principle for subsequent humanoid
-              deployments. Each class implies a different debugging
-              substrate and a different evidence bar before a fix can be
-              considered complete.
+              SONIC paper criterion (arXiv 2511.07820): a clip fails if the root or an
+              end-effector height deviates by more than 0.25&nbsp;m or the root orientation by
+              more than 1&nbsp;rad; MPJPE-L is measured over the successful clips. Scored in
+              IsaacLab. novel500 and hard300 are BonesSeed motions, PHUMA is the
+              out-of-distribution benchmark, and the Pico row is our own VR teleop captures
+              through the SMPL encoder.
             </p>
           </div>
         </section>
@@ -364,12 +219,11 @@
         <!-- § More demos (extra clips) -->
         <section class="block" id="more-demos" aria-labelledby="more-demos-title">
           <h2 id="more-demos-title">
-            <span class="num">6</span>More demos
+            <span class="num">4</span>More demos
           </h2>
           <p class="block-intro">
-            Two additional clips of the same checkpoint family driving the
-            AgiBot X2 Ultra hardware — beyond the canonical natural-walk
-            tasks used in the abstract and ablation sections.
+            Two more clips on the AgiBot X2 Ultra hardware: live whole-body
+            teleoperation, and a BonesSeed dance motion.
           </p>
           <div class="video-grid">
             <figure
@@ -388,19 +242,19 @@
                   aria-describedby="video-balance-caption"
                 >
                   <source
-                    src="static/videos/x2-sonic-balancing-on-one-leg.mp4"
+                    src="static/videos/x2-sonic-wholebody-teleop.mp4"
                     type="video/mp4"
                   />
                   Your browser does not support embedded video.
                 </video>
               </div>
               <figcaption>
-                <h3 id="video-balance-title">Single-leg balance</h3>
+                <h3 id="video-balance-title">Whole-body teleoperation</h3>
                 <p id="video-balance-caption">
-                  X2 holds a static single-leg pose under the deployed
-                  whole-body controller — a stress test for base-IMU
-                  feedback and ankle / hip authority outside the locomotion
-                  regime that dominates the training distribution.
+                  Live whole-body teleoperation: the operator's own motion,
+                  captured with a VR headset and controllers, drives the X2 in
+                  real time through the same whole-body controller. The
+                  operator stands behind the robot; the robot follows.
                 </p>
               </figcaption>
             </figure>
@@ -421,19 +275,18 @@
                   aria-describedby="video-manip-caption"
                 >
                   <source
-                    src="static/videos/x2-sonic-manipulation-gestures.mp4"
+                    src="static/videos/x2-g1-gangnam-dance.mp4"
                     type="video/mp4"
                   />
                   Your browser does not support embedded video.
                 </video>
               </div>
               <figcaption>
-                <h3 id="video-manip-title">Upper-body gestures</h3>
+                <h3 id="video-manip-title">Gangnam-style dance, side by side with a Unitree G1</h3>
                 <p id="video-manip-caption">
-                  Whole-body policy driving coordinated arm, shoulder, and
-                  torso motions while the lower body holds a stable stance.
-                  Exercises the upper-body action channels that the
-                  natural-walk recordings touch only lightly.
+                  A BonesSeed Gangnam-style dance motion, performed on hardware
+                  by the AgiBot X2 (right) and a Unitree G1 (left) side by side:
+                  arm swings, torso turns and weight shifts on both legs.
                 </p>
               </figcaption>
             </figure>
@@ -443,7 +296,7 @@
         <!-- § Citation -->
         <section class="block" id="citation" aria-labelledby="citation-title">
           <h2 id="citation-title">
-            <span class="num">7</span>Citation
+            <span class="num">5</span>Citation
           </h2>
           <p>If you find this work useful, please cite:</p>
           <pre class="cite-box"><code id="bibtex">@misc{sonic2026agibotx2,

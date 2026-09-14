@@ -21,6 +21,7 @@
   .tagline p{margin:.4rem 0}
   .big{font-size:1.06rem}
   h2{font-size:1.25rem;margin:2.4rem 0 .8rem;border-bottom:1px solid var(--line);padding-bottom:.35rem}
+  h3{font-size:1.02rem;margin:1.4rem 0 .5rem;color:var(--muted)}
   video{width:100%;border-radius:8px;background:#000;display:block}
   .cap{color:var(--muted);font-size:.9rem;margin:.5rem 0 1.6rem}
   table{border-collapse:collapse;width:100%;font-size:.92rem;background:var(--card)}
@@ -37,14 +38,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Cross-Embodiment Transfer of a Frozen Humanoid Whole-Body Controller">
 <meta property="og:description" content="A commanded in-place turn where the controller demands torques the hardware cannot deliver - and which does not reproduce in simulation.">
-<meta property="og:image" content="https://sonic-agibot-x2.github.io/sonic-transfer/static/images/og_anomaly.png">
+<meta property="og:image" content="https://sonic-agibot-x2.github.io/sonic-transfer/static/images/og_architecture.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:url" content="https://sonic-agibot-x2.github.io/sonic-transfer/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Cross-Embodiment Transfer of a Frozen Humanoid Whole-Body Controller">
 <meta name="twitter:description" content="A commanded in-place turn where the controller demands torques the hardware cannot deliver - and which does not reproduce in simulation.">
-<meta name="twitter:image" content="https://sonic-agibot-x2.github.io/sonic-transfer/static/images/og_anomaly.png">
+<meta name="twitter:image" content="https://sonic-agibot-x2.github.io/sonic-transfer/static/images/og_architecture.png">
 </head>
 <body>
 <main>
@@ -111,82 +112,45 @@
   the zero-shot column shows the frozen prior's raw motion quality before
   any dynamics adaptation.</div>
 
-  <h2>When it does not transfer: an anomaly at millisecond scale</h2>
-  <video controls muted loop playsinline preload="metadata"
-         src="static/videos/anomaly_gauges.mp4"></video>
-  <div class="cap">A commanded in-place turn on hardware. Real time first (with
-  sound), then the same 2.1&nbsp;s at 10&times; slow motion with live telemetry:
-  dials are <b>PD torque demand</b> per hip and knee &mdash; green, amber past
-  the ~73&nbsp;N&middot;m stick-slip break-away, red past the
-  120&nbsp;N&middot;m motor rating &mdash; and the traces beneath are joint
-  speed. The controller asks for torques the actuators cannot deliver
-  (<b>199&nbsp;N&middot;m demanded of a 120&nbsp;N&middot;m joint</b>), the
-  firmware saturates, and the joint pins against a limit it cannot reach. We
-  have not yet isolated why.
-  <br><br>
-  Full write-ups, with the planner reference overlaid in MuJoCo:
-  <a href="anomalies/#a1">hip roll burst (2026-08-25)</a> &nbsp;&middot;&nbsp;
-  <a href="anomalies/#a2">torque reversal under softened hips (2026-08-26)</a>.
-  </div>
-
-  <div class="tagline">
-  <p class="big"><b>An open difficulty, stated plainly.</b> The frozen-G1
-  approach is proving substantially harder against the recently released
-  <b>fine-grained manipulation checkpoint</b> than against the earlier core.
-  That checkpoint targets the slow-precision regime and wrist accuracy, and the
-  whole-body controllers derived from it are the ones exhibiting this
-  behaviour.</p>
-  <p>It has <b>never been reproduced in simulation</b> &mdash; not on a
-  workstation, and not on the robot's own aarch64 binary driven by the
-  operator's own recorded command tape, with model, tuning and actuator plant
-  byte-identical. In sim the same gesture is the calmest part of the trace:
-  0.9&ndash;1.8&deg; of hip tracking error against 42&deg; on hardware. That
-  rules out configuration, the build, and the operator input &mdash; and leaves
-  the cause open.</p>
-  <p>The central unknown is the torque demand itself: the model repeatedly asks
-  for more than the hardware can produce, for reasons not yet isolated &mdash;
-  and this may be something the cross-embodiment transfer simply cannot achieve.
-  The frozen prior asks for dynamics this embodiment's actuators cannot realise,
-  and nothing in training penalises the ask, because in simulation the actuator
-  limit is absorbed for free. Rolling back to the natively-trained incumbent
-  removes the behaviour entirely.</p>
-  </div>
-
   <h2>Results at a glance</h2>
   <table>
     <tr><th>model</th><th>novel500 (in-dist)</th><th>hard300v3 (tail)</th><th>PHUMA (OOD)</th><th>PHUMA survival</th></tr>
     <tr><td>incumbent (native X2)</td><td>96.4 / 33.6 / 43.8</td><td>70.0 / 40.6 / 56.0</td><td>59.0 / 42.6 / 67.4</td><td>87.4</td></tr>
-    <tr><td>transfer (breadth only)</td><td>95.6 / 33.7 / 42.9</td><td>71.0 / 40.0 / 56.4</td><td>61.6 / 42.9 / 60.9</td><td>89.4</td></tr>
     <tr><td>transfer (selected)</td><td>96.2 / 33.1 / 42.9</td><td>72.3 / 39.9 / <b>55.8</b></td><td class="win">69.0 / 41.7 / 60.6</td><td class="win">90.7</td></tr>
   </table>
   <div class="cap">Success % / mean mm / p95 mm (survivors), IsaacLab strict
   gates, same machine; survival = MuJoCo second referee on the OOD slice.
   In-distribution: indistinguishable. Out-of-distribution: the frozen
-  prior's edge — present from the breadth phase, widened by polish.</div>
+  prior's edge, widened by polish.</div>
 
-  <h2>Three-way, v0.2: stock platform vs 39k incumbent vs frozen-G1 transfer</h2>
+  <h2>Evaluation under the SONIC paper's criterion</h2>
+  <h3>Success rate (%)</h3>
   <table>
-    <tr><th>set (encoder)</th><th>stock platform (G1 body)</th><th>incumbent, 39k (X2)</th><th>transfer (X2)</th></tr>
-    <tr><td>novel487 (G1)</td><td>480</td><td>474</td><td>469</td></tr>
-    <tr><td>novel487 (SMPL)</td><td>447</td><td>428</td><td class="win">427</td></tr>
-    <tr><td>VR capture 27 (SMPL)</td><td>4</td><td>18</td><td>15</td></tr>
-    <tr><td>VR capture 31 (G1)</td><td>14</td><td>24</td><td class="win">25 [26]</td></tr>
-    <tr><td>VR capture 36 (G1)</td><td>20</td><td>29</td><td class="win">29 [31]</td></tr>
-    <tr><td>teleop tapes 29 (G1)</td><td>—</td><td>20</td><td>16 [18]</td></tr>
-    <tr><td>robot spans 26 (G1)</td><td>—</td><td>18</td><td>13 [15]</td></tr>
-    <tr><td>holds 24 / chores 8 (G1)</td><td>—</td><td>24, 8</td><td class="win">24, 8</td></tr>
-    <tr><td>hard300 (G1)</td><td>—</td><td>213–217</td><td class="win">224</td></tr>
+    <tr><th>set</th><th>stock G1 (own body)</th><th>39k incumbent (X2)</th><th>43k incumbent (X2)</th><th>16k frozen core (X2)</th><th>35k frozen core (X2)</th><th>40k frozen core (X2)</th></tr>
+    <tr><td>novel500 (in-distribution)</td><td>97.8</td><td>97.2</td><td>97.8</td><td>98.0</td><td>98.0</td><td>96.6</td></tr>
+    <tr><td>hard300v3 (in-distribution tail)</td><td>89.0</td><td>73.3</td><td>72.3</td><td class="win">77.7</td><td>76.7</td><td>75.7</td></tr>
+    <tr><td>PHUMA 1,931 (out-of-distribution)</td><td>86.8</td><td>66.2</td><td>66.1</td><td class="win">76.7</td><td>71.0</td><td>68.5</td></tr>
+    <tr><td>Pico captures via the SMPL encoder (27)</td><td>40.7</td><td class="win">66.7</td><td>51.9</td><td>37.0</td><td>59.3</td><td>59.3</td></tr>
   </table>
-  <div class="cap">Passes/total, strict gates; brackets = the line's best
-  single checkpoints. Both lines continued training past the paper's
-  Table 1: the incumbent to its 39k checkpoints, the transfer under the
-  vendor-true actuator plant with the SMPL sampling share. The stock
-  platform column is the release on its own G1 body (VR rows: its own G1
-  retargets) — it drops seven points through its own SMPL path
-  (98.6→91.8%) and scores 4/27 on the hardest VR-capture source, so most
-  of the remaining gap is the input path and capture source, not the
-  transfer. The transfer trails only on the two teleop-executed sets —
-  the incumbent's home-field content.</div>
+  <h3>Tracking error (MPJPE-L, mm, successful clips only)</h3>
+  <table>
+    <tr><th>set</th><th>stock G1 (own body)</th><th>39k incumbent (X2)</th><th>43k incumbent (X2)</th><th>16k frozen core (X2)</th><th>35k frozen core (X2)</th><th>40k frozen core (X2)</th></tr>
+    <tr><td>novel500 (in-distribution)</td><td>26.9</td><td>34.3</td><td>33.6</td><td>31.9</td><td>32.7</td><td>32.4</td></tr>
+    <tr><td>hard300v3 (in-distribution tail)</td><td>35.3</td><td>41.5</td><td>39.9</td><td>38.6</td><td>39.4</td><td>39.0</td></tr>
+    <tr><td>PHUMA 1,931 (out-of-distribution)</td><td>32.8</td><td>43.4</td><td>43.7</td><td>41.6</td><td>41.3</td><td>41.3</td></tr>
+    <tr><td>Pico captures via the SMPL encoder (27)</td><td>40.4</td><td>42.4</td><td>46.1</td><td>51.5</td><td>43.2</td><td>42.4</td></tr>
+  </table>
+  <div class="cap">Paper criterion (arXiv 2511.07820): a clip fails if the root or an end-effector height deviates
+  by more than 0.25&nbsp;m or the root orientation by more than 1&nbsp;rad, fixed thresholds; MPJPE-L over the
+  successful clips. Scored in IsaacLab, 256 parallel environments, on the same machine; the paper scores in MuJoCo, so
+  its own numbers (PHUMA 97.2% on the full 68,326-motion set) are not directly comparable to our stock-G1 anchor. Sets:
+  novel500 and hard300v3 are drawn from the BONES-SEED family the models were trained on (no explicit held-out split was
+  used); PHUMA is the paper's only external benchmark and the only out-of-distribution row; the Pico captures are our own
+  full-body VR teleop recordings, in the training corpus of the X2 models (in-distribution for them, unseen by the stock
+  G1) and evaluated through the SMPL encoder, the live teleop input path. Headline checkpoints: the 39k incumbent (best on
+  the Pico path) and the 35k frozen core (best X2 model on the general sets); the 16k frozen core is the deployed model and
+  remains the strongest X2 checkpoint on PHUMA — the fine-tune toward the Pico captures lifted the Pico rows and cost
+  points on the general sets.</div>
 
   <div class="foot">
     Built on the released <a href="https://nvlabs.github.io/GEAR-SONIC/">GEAR-SONIC</a> platform.
